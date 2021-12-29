@@ -15,6 +15,7 @@ DBang is a CLI to manage Deno scripts on GitHub
 * Prompt for permissions confirm on first run
 * Prompt for permissions confirm after `dbang-catalog.json` changed, like Android app
 * Trust user's scripts by `dbang trust <user>`
+* Private repo support by DENO_AUTH_TOKENS
 
 # References
 
