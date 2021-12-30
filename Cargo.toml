@@ -1,0 +1,25 @@
+[package]
+name = "dbang"
+version = "0.1.0"
+edition = "2021"
+authors = ["linux_china <libing.chen@gmail.com>"]
+description = "CLI to manage Deno scripts"
+keywords = ["dbang", "deno"]
+categories = ["command-line-utilities"]
+documentation = "https://dbang.dev"
+readme = "README.md"
+homepage = "https://dbang.dev"
+repository = "https://github.com/dbangdev/dbang"
+license = "Apache-2.0"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+colored = "2"
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+clap = "3.0.0-rc.9"
+clap_generate = "3.0.0-rc.9"
+chrono = "0.4"
+regex = "1"
