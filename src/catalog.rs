@@ -18,7 +18,7 @@ pub struct Artifact {
 }
 
 impl Artifact {
-    fn get_runnable_script(&self, github_user: &str) -> String {
+    pub fn get_runnable_script(&self, github_user: &str) -> String {
         return if self.script_ref.starts_with("https://") || self.script_ref.starts_with("http://") {
             self.script_ref.to_string()
         } else {
