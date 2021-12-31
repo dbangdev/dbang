@@ -101,11 +101,21 @@ pub fn build_app() -> App<'static> {
     App::new("dbang")
         .version(VERSION)
         .about("CLI to manage Deno scripts: https://dbang.dev")
-        // todo add run as base command
         .subcommand(run_command)
         .subcommand(deno_command)
         .subcommand(trust_command)
         .subcommand(install_command)
         .subcommand(catalog_command)
         .subcommand(complete_command)
+        .arg(Arg::new("artifact")
+            .required(false)
+            .help("artifact name")
+            .index(1))
+        .arg(
+            Arg::new("params")
+                .required(false)
+                .help("params")
+                .index(2)
+                .multiple_values(true)
+        )
 }
