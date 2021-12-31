@@ -1,6 +1,6 @@
 use std::process::Command;
 
-pub fn run(script_name: &str, args: &[&str], permissions: &[&str]) {
+pub fn run(script_name: &str, args: &[&str], permissions: &[String]) {
     Command::new("deno")
         .arg("run")
         .args(permissions)
