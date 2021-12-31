@@ -4,6 +4,20 @@ use clap::{App, Arg};
 const VERSION: &str = "0.1.0";
 
 pub fn build_app() -> App<'static> {
+    let run_command = App::new("run")
+        .about("Run scripts from catalog")
+        .arg(
+            Arg::new("artifact")
+                .required(true)
+                .help("artifact name")
+                .index(1)
+        ).arg(
+        Arg::new("params")
+            .required(false)
+            .help("params")
+            .index(2)
+            .multiple_values(true)
+    );
     let deno_command = App::new("deno")
         .about("Deno version management")
         .arg(
@@ -87,6 +101,8 @@ pub fn build_app() -> App<'static> {
     App::new("dbang")
         .version(VERSION)
         .about("CLI to manage Deno scripts: https://dbang.dev")
+        // todo add run as base command
+        .subcommand(run_command)
         .subcommand(deno_command)
         .subcommand(trust_command)
         .subcommand(install_command)
