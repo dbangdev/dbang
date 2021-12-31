@@ -2,28 +2,42 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use reqwest::blocking::Client;
 
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Catalog {
-    aliases: HashMap<String, Artifact>,
+    pub aliases: HashMap<String, Artifact>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Artifact {
     #[serde(rename(serialize = "script-ref", deserialize = "script-ref"))]
-    script_ref: String,
-    description: Option<String>,
-    deno: Option<String>,
-    permissions: Option<Vec<String>>,
+    pub script_ref: String,
+    pub description: Option<String>,
+    pub deno: Option<String>,
+    pub permissions: Option<Vec<String>>,
 }
 
 impl Artifact {
-    pub fn get_runnable_script(&self, github_user: &str) -> String {
+    pub fn get_script_http_url(&self, github_user: &str) -> String {
         return if self.script_ref.starts_with("https://") || self.script_ref.starts_with("http://") {
             self.script_ref.to_string()
         } else {
             format!("https://raw.githubusercontent.com/{}/dbang-catalog/main/{}", github_user, self.script_ref)
         };
+    }
+
+    pub fn get_deno_permissions(&self) -> Vec<String> {
+        if let Some(permissions) = &self.permissions {
+            return permissions.iter().map(|x| {
+                if x.starts_with("--") {
+                    x.clone()
+                } else if x.starts_with("-") {
+                    format!("-{}", x)
+                } else {
+                    format!("--{}", x)
+                }
+            }).collect();
+        }
+        return vec![];
     }
 }
 
@@ -81,6 +95,6 @@ mod tests {
     fn test_get_artifact() {
         let artifact = get_artifact("linux-china", "hello").unwrap();
         println!("artifact = {:?}", artifact);
-        println!("url = {}", artifact.get_runnable_script("linux-china"));
+        println!("url = {}", artifact.get_script_http_url("linux-china"));
     }
 }
