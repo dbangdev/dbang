@@ -5,8 +5,12 @@ help:
   cargo run --package dbang --bin dbang -- --help
 
 # run hello@linux-china from run subcommand
-run:
+hello:
   cargo run --package dbang --bin dbang -- run hello@linux-china world
+
+# run myip@linux-china from run subcommand
+myip:
+  cargo run --package dbang --bin dbang -- run myip@linux-china
 
 # run hello@linux-china from command line directly
 run2:
