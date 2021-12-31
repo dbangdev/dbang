@@ -36,11 +36,11 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str]) {
     let github_user = artifact_parts[1];
     let artifact_name = artifact_parts[0];
     let artifact = catalog::get_artifact(github_user, artifact_name).unwrap();
-    let script_url = artifact.get_runnable_script(github_user);
-    let mut _permissions = vec![];
+    let script_url = artifact.get_script_http_url(github_user);
+    let permissions: Vec<String> = artifact.get_deno_permissions();
     deno_cli::run(&script_url,
                   artifact_args,
-                  &_permissions,
+                  &permissions,
     );
 }
 
