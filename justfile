@@ -7,3 +7,8 @@ help:
 # run hello@linux-china
 run:
   cargo run --package dbang --bin dbang -- run hello@linux-china world
+
+# build with release and copy dbang to ~/bin
+build:
+  cargo build --release
+  cp target/release/dbang ~/bin/
