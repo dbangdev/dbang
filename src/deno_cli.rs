@@ -3,6 +3,7 @@ use std::process::{Command, Stdio};
 pub fn run(script_name: &str, args: &[&str], permissions: &[String]) {
     Command::new("deno")
         .arg("run")
+        .arg("--no-check")
         .args(permissions)
         .arg(script_name)
         .args(args)
