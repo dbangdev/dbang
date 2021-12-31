@@ -4,7 +4,6 @@ mod catalog;
 
 use crate::app::build_app;
 use colored::*;
-use std::env;
 
 fn main() {
     let app = build_app();
@@ -18,16 +17,20 @@ fn main() {
     }
     let (sub_command, args) = matches.subcommand().unwrap();
     if sub_command == "run" {
-        let artifact_name = args.value_of("artifact").unwrap();
-        println!("{}", artifact_name);
         let mut artifact_args = vec![];
         if let Some(params) = args.values_of("params") {
             artifact_args = params.collect::<Vec<&str>>()
         }
-        let mut permissions = vec![];
-        deno_cli::run("https://raw.githubusercontent.com/linux-china/dbang-catalog/main/hello.ts",
+        let artifact_full_name = args.value_of("artifact").unwrap();
+        let artifact_parts: Vec<&str> = artifact_full_name.split("@").collect();
+        let github_user = artifact_parts[1];
+        let artifact_name = artifact_parts[0];
+        let artifact = catalog::get_artifact(github_user, artifact_name).unwrap();
+        let script_url = artifact.get_runnable_script(github_user);
+        let mut _permissions = vec![];
+        deno_cli::run(&script_url,
                       &artifact_args,
-                      &permissions,
+                      &_permissions,
         );
     }
 }
