@@ -4,7 +4,7 @@ use reqwest::blocking::Client;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Catalog {
-    pub aliases: HashMap<String, Artifact>,
+    pub scripts: HashMap<String, Artifact>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -43,7 +43,7 @@ impl Artifact {
 
 pub fn get_artifact(github_user: &str, artifact_name: &str) -> reqwest::Result<Artifact> {
     let catalog = fetch_nbang_catalog(github_user)?;
-    let artifact = catalog.aliases.get(artifact_name).unwrap();
+    let artifact = catalog.scripts.get(artifact_name).unwrap();
     Ok(artifact.clone())
 }
 
