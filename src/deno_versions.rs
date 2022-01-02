@@ -1,26 +1,22 @@
 use std::fs::File;
 use reqwest::blocking::Client;
-use std::path::{Path, PathBuf};
+use std::path::{PathBuf};
 use std::fs;
 use std::io;
+use crate::dbang_utils;
 
 pub fn get_deno_binary(version: &str) -> PathBuf {
     get_deno_home(version).join("deno")
 }
 
 pub fn get_deno_home(version: &str) -> PathBuf {
-    let home_dir: PathBuf = dirs::home_dir().unwrap();
-    Path::new(&home_dir)
-        .join(".dbang")
+    dbang_utils::dbang_dir()
         .join("deno")
         .join(version)
 }
 
 pub fn list() -> anyhow::Result<Vec<String>> {
-    let home_dir: PathBuf = dirs::home_dir().unwrap();
-    let deno_dir = Path::new(&home_dir)
-        .join(".dbang")
-        .join("deno");
+    let deno_dir = dbang_utils::dbang_dir().join("deno");
     let mut files = fs::read_dir(deno_dir)?;
     let mut versions = Vec::new();
     while let Some(file) = files.next() {
