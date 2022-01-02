@@ -14,6 +14,7 @@ use crate::app::build_app;
 fn main() {
     let app = build_app();
     let matches = app.get_matches();
+    let verbose = matches.is_present("verbose");
     // run artifact without 'run' sub command
     if matches.is_present("script") {
         let artifact_full_name = matches.value_of("script").unwrap();
@@ -21,7 +22,7 @@ fn main() {
         if let Some(params) = matches.values_of("params") {
             artifact_args = params.collect::<Vec<&str>>()
         }
-        dbang_run(artifact_full_name, &artifact_args).unwrap();
+        dbang_run(artifact_full_name, &artifact_args, verbose).unwrap();
         return;
     }
     if matches.subcommand().is_none() { //display help if no subcommand
@@ -41,7 +42,7 @@ fn main() {
             artifact_args = params.collect::<Vec<&str>>()
         }
         let artifact_full_name = sub_command_args.value_of("script").unwrap();
-        dbang_run(artifact_full_name, &artifact_args).unwrap();
+        dbang_run(artifact_full_name, &artifact_args, verbose).unwrap();
     } else if sub_command == "catalog" {
         if sub_command_args.subcommand().is_none() { // print help if no subcommand
             build_app().find_subcommand("catalog").unwrap().clone().print_help().unwrap();
@@ -148,7 +149,7 @@ fn confirm_remote_catalog(repo_name: &str) -> anyhow::Result<bool> {
     };
 }
 
-fn dbang_run(artifact_full_name: &str, artifact_args: &[&str]) -> anyhow::Result<()> {
+fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) -> anyhow::Result<()> {
     let artifact_parts: Vec<&str> = artifact_full_name.split("@").collect();
     let repo_name = artifact_parts[1];
     let artifact_name = artifact_parts[0];
@@ -161,6 +162,14 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str]) -> anyhow::Result
     }
     let artifact = catalog::Artifact::read_from_local(repo_name, artifact_name).unwrap();
     let script_url = artifact.get_script_http_url(repo_name);
+    if verbose {
+        println!("[dbang] begin to run {}/{}", artifact_name, artifact_full_name);
+        println!("[dbang] script url:  {}", script_url);
+        let permissions = artifact.get_deno_permissions();
+        if !permissions.is_empty() {
+            println!("[dbang] script permission:  {}", permissions.join(","));
+        }
+    }
     let permissions: Vec<String> = artifact.get_deno_permissions();
     deno_cli::run(&script_url,
                   artifact_args,
