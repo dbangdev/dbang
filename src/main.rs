@@ -91,6 +91,28 @@ fn main() {
         } else {
             println!("{}", "Unknown subcommand");
         }
+    } else if sub_command == "trust" {
+        if sub_command_args.subcommand().is_none() { // print help if no subcommand
+            build_app().find_subcommand("trust").unwrap().clone().print_help().unwrap();
+            return;
+        }
+        let (trust_sub_command, trust_sub_command_args) = sub_command_args.subcommand().unwrap();
+        if trust_sub_command == "list" {
+            println!("Local trusted catalogs:");
+            for catalog in known_catalogs::list().unwrap() {
+                println!("  {}", catalog);
+            };
+        } else if trust_sub_command == "add" {
+            let repo_name = trust_sub_command_args.value_of("repo_name").unwrap().to_string();
+            known_catalogs::add(&repo_name).unwrap();
+            println!("Catalog in trusted list now!");
+        } else if trust_sub_command == "delete" {
+            let repo_name = trust_sub_command_args.value_of("repo_name").unwrap().to_string();
+            known_catalogs::remove(&repo_name).unwrap();
+            println!("Catalog removed from trusted list!");
+        } else {
+            println!("{}", "Unknown subcommand");
+        }
     } else {
         println!("{}", "Unknown subcommand");
     }
