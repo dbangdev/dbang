@@ -119,6 +119,11 @@ fn main() {
 }
 
 fn confirm_remote_catalog(repo_name: &str) -> anyhow::Result<bool> {
+    // check trusted catalog or not
+    let is_trusted = known_catalogs::include(repo_name)?;
+    if is_trusted {
+        return Ok(true);
+    }
     let catalog = catalog::Catalog::fetch_from_github(repo_name)?;
     let catalog_json = serde_json::to_string(&catalog)?;
     println!("Detail of nbang-catalog.json:");
