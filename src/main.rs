@@ -1,6 +1,6 @@
 mod app;
 mod deno_cli;
-mod deno_version;
+mod deno_versions;
 mod catalog;
 
 use std::io;
@@ -60,6 +60,27 @@ fn main() {
         if sub_command_args.subcommand().is_none() { // print help if no subcommand
             build_app().find_subcommand("deno").unwrap().clone().print_help().unwrap();
             return;
+        }
+        let (deno_sub_command, deno_sub_command_args) = sub_command_args.subcommand().unwrap();
+        if deno_sub_command == "list" {
+            println!("Local Deno versions:");
+            for deno_version in deno_versions::list().unwrap() {
+                println!("  {}", deno_version);
+            };
+        } else if deno_sub_command == "add" {
+            let mut deno_version = deno_sub_command_args.value_of("version").unwrap().to_string();
+            if deno_version.starts_with("v") {
+                deno_version = deno_version[1..].to_string();
+            }
+            println!("Begin to install Deno...");
+            deno_versions::install(&deno_version).unwrap();
+            println!("Deno installed successfully!");
+        } else if deno_sub_command == "delete" {
+            let deno_version = deno_sub_command_args.value_of("version").unwrap();
+            deno_versions::delete(deno_version).unwrap();
+            println!("Deno deleted successfully!");
+        } else {
+            println!("{}", "Unknown subcommand");
         }
     } else {
         println!("{}", "Unknown subcommand");
