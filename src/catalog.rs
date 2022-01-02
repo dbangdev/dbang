@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use reqwest::blocking::Client;
-use std::path::{Path, PathBuf};
 use std::{fs};
-use crate::deno_cli;
+use crate::{dbang_utils, deno_cli};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Catalog {
@@ -71,9 +70,7 @@ impl Catalog {
 
     pub fn read_from_local(repo_name: &str) -> anyhow::Result<Catalog> {
         let catalog_full_name = Catalog::get_full_repo_name(repo_name);
-        let home_dir: PathBuf = dirs::home_dir().unwrap();
-        let dbang_catalog_json_file = Path::new(&home_dir)
-            .join(".dbang")
+        let dbang_catalog_json_file = dbang_utils::dbang_dir()
             .join("catalogs/github")
             .join(catalog_full_name)
             .join("dbang-catalog.json");
@@ -84,9 +81,7 @@ impl Catalog {
 
     pub fn save(&self, repo_name: &str) -> anyhow::Result<()> {
         let catalog_full_name = Catalog::get_full_repo_name(repo_name);
-        let home_dir: PathBuf = dirs::home_dir().unwrap();
-        let dbang_catalog_dir = Path::new(&home_dir)
-            .join(".dbang")
+        let dbang_catalog_dir = dbang_utils::dbang_dir()
             .join("catalogs/github")
             .join(catalog_full_name);
         std::fs::create_dir_all(&dbang_catalog_dir)?;
@@ -98,9 +93,7 @@ impl Catalog {
 
     pub fn local_exists(repo_name: &str) -> anyhow::Result<bool> {
         let catalog_repo = Catalog::get_full_repo_name(repo_name);
-        let home_dir: PathBuf = dirs::home_dir().unwrap();
-        let dbang_catalog_json_file = Path::new(&home_dir)
-            .join(".dbang")
+        let dbang_catalog_json_file = dbang_utils::dbang_dir()
             .join("catalogs/github")
             .join(catalog_repo)
             .join("dbang-catalog.json");
@@ -109,9 +102,7 @@ impl Catalog {
 
     pub fn delete(repo_name: &str) -> anyhow::Result<()> {
         let catalog_repo = Catalog::get_full_repo_name(repo_name);
-        let home_dir: PathBuf = dirs::home_dir().unwrap();
-        let dbang_catalog = Path::new(&home_dir)
-            .join(".dbang")
+        let dbang_catalog = dbang_utils::dbang_dir()
             .join("catalogs/github")
             .join(catalog_repo);
         fs::remove_dir_all(&dbang_catalog)?;
@@ -119,9 +110,7 @@ impl Catalog {
     }
 
     pub fn list_local() -> anyhow::Result<Vec<String>> {
-        let home_dir: PathBuf = dirs::home_dir().unwrap();
-        let github_dir = Path::new(&home_dir)
-            .join(".dbang")
+        let github_dir = dbang_utils::dbang_dir()
             .join("catalogs")
             .join("github");
         let mut users = fs::read_dir(github_dir)?;
