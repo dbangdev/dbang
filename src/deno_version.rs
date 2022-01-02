@@ -5,12 +5,7 @@ use std::fs;
 use std::io;
 
 pub fn get_deno_binary(version: &str) -> PathBuf {
-    let home_dir: PathBuf = dirs::home_dir().unwrap();
-    Path::new(&home_dir)
-        .join(".dbang")
-        .join("deno")
-        .join(version)
-        .join("deno")
+    get_deno_home(version).join("deno")
 }
 
 pub fn get_deno_home(version: &str) -> PathBuf {
@@ -110,7 +105,7 @@ mod tests {
 
     #[test]
     fn test_deno_exists() {
-        println!("{}", exists("1.17.1"));
+        println!("{}", get_deno_binary("1.17.1").exists());
     }
 
     #[test]
