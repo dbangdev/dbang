@@ -40,7 +40,7 @@ pub fn build_app() -> App<'static> {
             )
         );
     let trust_command = App::new("trust")
-        .about("Trust management")
+        .about("Trust management for catalogs")
         .subcommand(App::new("list")
             .about("List trusted catalogs")
         )
