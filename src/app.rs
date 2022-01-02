@@ -20,44 +20,45 @@ pub fn build_app() -> App<'static> {
     );
     let deno_command = App::new("deno")
         .about("Deno version management")
-        .arg(
-            Arg::new("name")
-                .long("name") // allow --name
-                .takes_value(true)
-                .help("template name")
-                .required(true),
+        .subcommand(App::new("list")
+            .about("List installed deno versions")
         )
-        .arg(
-            Arg::new("repo")
-                .long("repo") // allow --name
-                .takes_value(true)
-                .help("git repository url")
-                .required(true),
+        .subcommand(App::new("install")
+            .about("Install Deno with version")
+            .arg(Arg::new("version")
+                .required(true)
+                .help("Deno version")
+                .index(1)
+            )
         )
-        .arg(
-            Arg::new("desc")
-                .long("desc") // allow --name
-                .takes_value(true)
-                .help("template description")
-                .required(true),
+        .subcommand(App::new("delete")
+            .about("Delete local installed Deno")
+            .arg(Arg::new("version")
+                .required(true)
+                .help("Deno version")
+                .index(1)
+            )
         );
     let trust_command = App::new("trust")
-        .about("Catalog trust management")
-        .arg(
-            Arg::new("name")
-                //.long("name") // allow --name
-                .takes_value(true)
-                .help("template name")
-                .required(true)
-                .index(1),
+        .about("Trust management")
+        .subcommand(App::new("list")
+            .about("List trusted catalogs")
         )
-        .arg(
-            Arg::new("dir")
-                //.long("dir") // allow --name
-                .takes_value(true)
-                .help("App's directory")
+        .subcommand(App::new("add")
+            .about("Add new trusted catalog")
+            .arg(Arg::new("repo_name")
                 .required(true)
-                .index(2),
+                .help("GitHub repo name, e.g. github_user or github_user/repo")
+                .index(1)
+            )
+        )
+        .subcommand(App::new("delete")
+            .about("Delete trusted catalog")
+            .arg(Arg::new("repo_name")
+                .required(true)
+                .help("GitHub repo name, e.g. github_user or github_user/repo")
+                .index(1)
+            )
         );
     let install_command = App::new("install")
         .about("Install app from catalog")
@@ -67,13 +68,35 @@ pub fn build_app() -> App<'static> {
                 .help("template name")
                 .required(true),
         );
-    let catalog_command = App::new("catalog").about("Catalog").arg(
-        Arg::new("remote")
-            .long("remote")
-            .takes_value(false)
-            .help("remotes template")
-            .required(false),
-    );
+    let catalog_command = App::new("catalog")
+        .about("Catalog management")
+        .subcommand(App::new("list")
+            .about("List installed catalogs")
+        )
+        .subcommand(App::new("add")
+            .about("Add new catalog")
+            .arg(Arg::new("repo_name")
+                .required(true)
+                .help("GitHub repo name, e.g. github_user or github_user/repo")
+                .index(1)
+            )
+        )
+        .subcommand(App::new("delete")
+            .about("Delete local catalog")
+            .arg(Arg::new("repo_name")
+                .required(true)
+                .help("GitHub repo name, e.g. github_user or github_user/repo")
+                .index(1)
+            )
+        )
+        .subcommand(App::new("update")
+            .about("Update local catalog")
+            .arg(Arg::new("repo_name")
+                .required(true)
+                .help("GitHub repo name, e.g. github_user or github_user/repo")
+                .index(1)
+            )
+        );
     let complete_command = App::new("complete")
         .about("Generate shell completion for zsh & bash")
         .arg(
