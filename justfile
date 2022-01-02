@@ -8,6 +8,10 @@ help:
 hello:
   cargo run --package dbang --bin dbang -- run hello@linux-china world
 
+# run hello@linux-china/demo from run subcommand
+hello-demo:
+  cargo run --package dbang --bin dbang -- run hello@linux-china/demo world
+
 # run myip@linux-china from run subcommand
 myip:
   cargo run --package dbang --bin dbang -- run myip@linux-china
