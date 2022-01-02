@@ -107,6 +107,17 @@ impl Catalog {
         Ok(dbang_catalog_json_file.exists())
     }
 
+    pub fn delete(repo_name: &str) -> anyhow::Result<()> {
+        let catalog_repo = Catalog::get_full_repo_name(repo_name);
+        let home_dir: PathBuf = dirs::home_dir().unwrap();
+        let dbang_catalog = Path::new(&home_dir)
+            .join(".dbang")
+            .join("catalogs/github")
+            .join(catalog_repo);
+        fs::remove_dir_all(&dbang_catalog)?;
+        Ok(())
+    }
+
     pub fn list_local() -> anyhow::Result<Vec<String>> {
         let home_dir: PathBuf = dirs::home_dir().unwrap();
         let github_dir = Path::new(&home_dir)
