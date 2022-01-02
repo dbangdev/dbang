@@ -1,5 +1,6 @@
 mod app;
 mod deno_cli;
+mod deno_version;
 mod catalog;
 
 use std::io;
