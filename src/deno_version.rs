@@ -4,6 +4,23 @@ use std::path::{Path, PathBuf};
 use std::fs;
 use std::io;
 
+pub fn get_deno_binary(version: &str) -> PathBuf {
+    let home_dir: PathBuf = dirs::home_dir().unwrap();
+    Path::new(&home_dir)
+        .join(".dbang")
+        .join("deno")
+        .join(version)
+        .join("deno")
+}
+
+pub fn get_deno_home(version: &str) -> PathBuf {
+    let home_dir: PathBuf = dirs::home_dir().unwrap();
+    Path::new(&home_dir)
+        .join(".dbang")
+        .join("deno")
+        .join(version)
+}
+
 pub fn list() -> anyhow::Result<Vec<String>> {
     let home_dir: PathBuf = dirs::home_dir().unwrap();
     let deno_dir = Path::new(&home_dir)
@@ -22,23 +39,8 @@ pub fn list() -> anyhow::Result<Vec<String>> {
     Ok(versions)
 }
 
-pub fn exists(version: &str) -> bool {
-    let home_dir: PathBuf = dirs::home_dir().unwrap();
-    let deno_bin_path = Path::new(&home_dir)
-        .join(".dbang")
-        .join("deno")
-        .join(version)
-        .join("deno");
-    deno_bin_path.exists()
-}
-
 pub fn install(version: &str) -> anyhow::Result<()> {
-    let home_dir: PathBuf = dirs::home_dir().unwrap();
-    let deno_bin_path = Path::new(&home_dir)
-        .join(".dbang")
-        .join("deno")
-        .join(version)
-        .join("deno");
+    let deno_bin_path = get_deno_binary(version);
     if !deno_bin_path.exists() {
         download(version)?;
         unzip_deno(version)?;
@@ -47,11 +49,7 @@ pub fn install(version: &str) -> anyhow::Result<()> {
 }
 
 pub fn download(version: &str) -> anyhow::Result<()> {
-    let home_dir: PathBuf = dirs::home_dir().unwrap();
-    let deno_version_dir = Path::new(&home_dir)
-        .join(".dbang")
-        .join("deno")
-        .join(version);
+    let deno_version_dir = get_deno_home(version);
     std::fs::create_dir_all(&deno_version_dir)?;
     let temp_zip_file = deno_version_dir.join("deno.zip");
     let download_url = if cfg!(target_os = "macos") && cfg!(target_arch = "aarch64") {
@@ -73,11 +71,7 @@ pub fn download(version: &str) -> anyhow::Result<()> {
 }
 
 pub fn delete(version: &str) -> anyhow::Result<()> {
-    let home_dir: PathBuf = dirs::home_dir().unwrap();
-    let deno_version_dir = Path::new(&home_dir)
-        .join(".dbang")
-        .join("deno")
-        .join(version);
+    let deno_version_dir = get_deno_home(version);
     if deno_version_dir.exists() {
         fs::remove_dir_all(&deno_version_dir)?;
     }
@@ -85,11 +79,7 @@ pub fn delete(version: &str) -> anyhow::Result<()> {
 }
 
 pub fn unzip_deno(version: &str) -> anyhow::Result<()> {
-    let home_dir: PathBuf = dirs::home_dir().unwrap();
-    let deno_version_dir = Path::new(&home_dir)
-        .join(".dbang")
-        .join("deno")
-        .join(version);
+    let deno_version_dir = get_deno_home(version);
     let deno_zip_file = deno_version_dir.join("deno.zip");
     //unzip zip_file to deno_version_dir
     let mut zip = zip::ZipArchive::new(File::open(deno_zip_file)?)?;
