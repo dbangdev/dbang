@@ -7,9 +7,9 @@ pub fn build_app() -> App<'static> {
     let run_command = App::new("run")
         .about("Run scripts from catalog")
         .arg(
-            Arg::new("artifact")
+            Arg::new("script")
                 .required(true)
-                .help("artifact name")
+                .help("script name")
                 .index(1)
         ).arg(
         Arg::new("params")
@@ -63,9 +63,9 @@ pub fn build_app() -> App<'static> {
     let install_command = App::new("install")
         .about("Install app from catalog")
         .arg(
-            Arg::new("name")
+            Arg::new("script")
                 .takes_value(true)
-                .help("template name")
+                .help("script name")
                 .required(true),
         );
     let catalog_command = App::new("catalog")
@@ -130,9 +130,9 @@ pub fn build_app() -> App<'static> {
         .subcommand(install_command)
         .subcommand(catalog_command)
         .subcommand(complete_command)
-        .arg(Arg::new("artifact")
+        .arg(Arg::new("script")
             .required(false)
-            .help("artifact name")
+            .help("script name")
             .index(1))
         .arg(
             Arg::new("params")

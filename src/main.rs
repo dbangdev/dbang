@@ -15,8 +15,8 @@ fn main() {
     let app = build_app();
     let matches = app.get_matches();
     // run artifact without 'run' sub command
-    if matches.is_present("artifact") {
-        let artifact_full_name = matches.value_of("artifact").unwrap();
+    if matches.is_present("script") {
+        let artifact_full_name = matches.value_of("script").unwrap();
         let mut artifact_args = vec![];
         if let Some(params) = matches.values_of("params") {
             artifact_args = params.collect::<Vec<&str>>()
@@ -39,7 +39,7 @@ fn main() {
         if let Some(params) = sub_command_args.values_of("params") {
             artifact_args = params.collect::<Vec<&str>>()
         }
-        let artifact_full_name = sub_command_args.value_of("artifact").unwrap();
+        let artifact_full_name = sub_command_args.value_of("script").unwrap();
         dbang_run(artifact_full_name, &artifact_args).unwrap();
     } else if sub_command == "catalog" {
         if sub_command_args.subcommand().is_none() { // print help if no subcommand
