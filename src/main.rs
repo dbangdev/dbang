@@ -42,8 +42,17 @@ fn main() {
             for catalog_full_name in catalog::Catalog::list_local().unwrap() {
                 println!("{}", catalog_full_name);
             };
-        } else if catalog_sub_command == "add" {
-            //confirm_remote_catalog();
+        } else if catalog_sub_command == "add" || catalog_sub_command == "update" {
+            let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
+            if confirm_remote_catalog(repo_name).unwrap() {
+                println!("Catalog added successfully!");
+            } else {
+                println!("Abort to accept nbang catalog!");
+            }
+        } else if catalog_sub_command == "delete" {
+            let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
+            catalog::Catalog::delete(repo_name).unwrap();
+            println!("Catalog deleted successfully!");
         } else {
             println!("{}", "Unknown subcommand");
         }
@@ -81,8 +90,7 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str]) -> anyhow::Result
     let artifact_name = artifact_parts[0];
     // validate local catalog exists or not
     if !catalog::Catalog::local_exists(repo_name)? {
-        let result = confirm_remote_catalog(repo_name)?;
-        if !result {
+        if !confirm_remote_catalog(repo_name)? {
             println!("Abort to accept nbang catalog!");
             return Ok(());
         }
