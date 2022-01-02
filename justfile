@@ -4,6 +4,18 @@
 help:
   cargo run --package dbang --bin dbang -- --help
 
+# Catalog list
+catalog-list:
+  cargo run --package dbang --bin dbang -- catalog list
+
+# Catalog add
+catalog-add:
+  cargo run --package dbang --bin dbang -- catalog add linux-china
+
+# Deno list
+deno-list:
+  cargo run --package dbang --bin dbang -- deno list
+
 # run hello@linux-china from run subcommand
 hello:
   cargo run --package dbang --bin dbang -- run hello@linux-china world
