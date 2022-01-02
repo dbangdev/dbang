@@ -82,6 +82,20 @@ impl Catalog {
         Ok(catalog)
     }
 
+    pub fn save(&self, repo_name: &str) -> anyhow::Result<()> {
+        let catalog_full_name = Catalog::get_full_repo_name(repo_name);
+        let home_dir: PathBuf = dirs::home_dir().unwrap();
+        let dbang_catalog_dir = Path::new(&home_dir)
+            .join(".dbang")
+            .join("catalogs/github")
+            .join(catalog_full_name);
+        std::fs::create_dir_all(&dbang_catalog_dir)?;
+        let dbang_catalog_file = dbang_catalog_dir.join("dbang-catalog.json");
+        let json_text = serde_json::to_string(self)?;
+        std::fs::write(&dbang_catalog_file, json_text)?;
+        Ok(())
+    }
+
     pub fn local_exists(repo_name: &str) -> anyhow::Result<bool> {
         let catalog_repo = Catalog::get_full_repo_name(repo_name);
         let home_dir: PathBuf = dirs::home_dir().unwrap();
@@ -129,19 +143,6 @@ impl Catalog {
 }
 
 
-pub fn save_nbang_catalog_from_json(repo_name: &str, json_text: &str) -> anyhow::Result<()> {
-    let catalog_full_name = Catalog::get_full_repo_name(repo_name);
-    let home_dir: PathBuf = dirs::home_dir().unwrap();
-    let dbang_catalog_dir = Path::new(&home_dir)
-        .join(".dbang")
-        .join("catalogs/github")
-        .join(catalog_full_name);
-    std::fs::create_dir_all(&dbang_catalog_dir)?;
-    let dbang_catalog_file = dbang_catalog_dir.join("dbang-catalog.json");
-    std::fs::write(&dbang_catalog_file, json_text)?;
-    Ok(())
-}
-
 pub fn save_remote_nbang_catalog(repo_name: &str) -> anyhow::Result<()> {
     let catalog_full_name = Catalog::get_full_repo_name(repo_name);
     let url = format!("https://raw.githubusercontent.com/{}/main/dbang-catalog.json", catalog_full_name);
@@ -150,8 +151,8 @@ pub fn save_remote_nbang_catalog(repo_name: &str) -> anyhow::Result<()> {
         .get(&url)
         .header("Accept", "application/json")
         .send()?;
-    let json_text = response.text()?;
-    save_nbang_catalog_from_json(&catalog_full_name, &json_text)
+    let catalog = response.json::<Catalog>()?;
+    catalog.save(&catalog_full_name)
 }
 
 
