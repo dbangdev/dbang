@@ -2,6 +2,8 @@ mod app;
 mod deno_cli;
 mod deno_versions;
 mod catalog;
+mod known_catalogs;
+mod dbang_utils;
 
 use std::io;
 use std::io::Write;
@@ -12,7 +14,8 @@ use crate::app::build_app;
 fn main() {
     let app = build_app();
     let matches = app.get_matches();
-    if matches.is_present("artifact") { // run artifact without run sub command
+    // run artifact without 'run' sub command
+    if matches.is_present("artifact") {
         let artifact_full_name = matches.value_of("artifact").unwrap();
         let mut artifact_args = vec![];
         if let Some(params) = matches.values_of("params") {
@@ -24,6 +27,12 @@ fn main() {
     if matches.subcommand().is_none() { //display help if no subcommand
         build_app().print_help().unwrap();
     }
+    // make sure DBANG_DIR ~/.dbang exist
+    let dbang_dir = dbang_utils::dbang_dir();
+    if !dbang_dir.exists() {
+        std::fs::create_dir(&dbang_dir).unwrap();
+    }
+    // parse subcommand and run
     let (sub_command, sub_command_args) = matches.subcommand().unwrap();
     if sub_command == "run" {
         let mut artifact_args = vec![];
