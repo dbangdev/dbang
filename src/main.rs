@@ -49,8 +49,9 @@ fn main() {
         }
         let (catalog_sub_command, catalog_sub_command_args) = sub_command_args.subcommand().unwrap();
         if catalog_sub_command == "list" {
+            println!("Local installed catalogs:");
             for catalog_full_name in catalog::Catalog::list_local().unwrap() {
-                println!("{}", catalog_full_name);
+                println!("  {}", catalog_full_name);
             };
         } else if catalog_sub_command == "add" || catalog_sub_command == "update" {
             let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
@@ -63,6 +64,11 @@ fn main() {
             let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
             catalog::Catalog::delete(repo_name).unwrap();
             println!("Catalog deleted successfully!");
+        } else if catalog_sub_command == "show" {
+            let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
+            let catalog = catalog::Catalog::read_from_local(repo_name).unwrap();
+            let catalog_json = serde_json::to_string(&catalog).unwrap();
+            println!("{}", catalog_json.to_colored_json_auto().unwrap());
         } else {
             println!("{}", "Unknown subcommand");
         }
