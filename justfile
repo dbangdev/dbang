@@ -8,6 +8,10 @@ help:
 catalog-list:
   cargo run --package dbang --bin dbang -- catalog list
 
+# Catalog info
+catalog-info:
+  cargo run --package dbang --bin dbang -- catalog show linux-china
+
 # Catalog add
 catalog-add:
   cargo run --package dbang --bin dbang -- catalog add linux-china
