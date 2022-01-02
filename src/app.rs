@@ -23,7 +23,7 @@ pub fn build_app() -> App<'static> {
         .subcommand(App::new("list")
             .about("List installed deno versions")
         )
-        .subcommand(App::new("install")
+        .subcommand(App::new("add")
             .about("Install Deno with version")
             .arg(Arg::new("version")
                 .required(true)
