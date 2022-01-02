@@ -132,6 +132,14 @@ pub fn build_app() -> App<'static> {
     App::new("dbang")
         .version(VERSION)
         .about("CLI to manage Deno scripts: https://dbang.dev")
+        .arg(
+            Arg::new("verbose")
+                .long("verbose")
+                .short('v')
+                .takes_value(false)
+                .help("Verbose output")
+                .required(false),
+        )
         .subcommand(run_command)
         .subcommand(deno_command)
         .subcommand(trust_command)
