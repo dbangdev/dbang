@@ -24,21 +24,55 @@ fn main() {
     if matches.subcommand().is_none() { //display help if no subcommand
         build_app().print_help().unwrap();
     }
-    let (sub_command, args) = matches.subcommand().unwrap();
+    let (sub_command, sub_command_args) = matches.subcommand().unwrap();
     if sub_command == "run" {
         let mut artifact_args = vec![];
-        if let Some(params) = args.values_of("params") {
+        if let Some(params) = sub_command_args.values_of("params") {
             artifact_args = params.collect::<Vec<&str>>()
         }
-        let artifact_full_name = args.value_of("artifact").unwrap();
+        let artifact_full_name = sub_command_args.value_of("artifact").unwrap();
         dbang_run(artifact_full_name, &artifact_args).unwrap();
     } else if sub_command == "catalog" {
-
+        if sub_command_args.subcommand().is_none() { // print help if no subcommand
+            build_app().find_subcommand("catalog").unwrap().clone().print_help().unwrap();
+            return;
+        }
+        let (catalog_sub_command, catalog_sub_command_args) = sub_command_args.subcommand().unwrap();
+        if catalog_sub_command == "list" {
+            for catalog_full_name in catalog::Catalog::list_local().unwrap() {
+                println!("{}", catalog_full_name);
+            };
+        } else if catalog_sub_command == "add" {
+            //confirm_remote_catalog();
+        } else {
+            println!("{}", "Unknown subcommand");
+        }
     } else if sub_command == "deno" {
-        //dbang_version();
+        if sub_command_args.subcommand().is_none() { // print help if no subcommand
+            build_app().find_subcommand("deno").unwrap().clone().print_help().unwrap();
+            return;
+        }
     } else {
         println!("{}", "Unknown subcommand");
     }
+}
+
+fn confirm_remote_catalog(repo_name: &str) -> anyhow::Result<bool> {
+    let catalog = catalog::Catalog::fetch_from_github(repo_name)?;
+    let catalog_json = serde_json::to_string(&catalog)?;
+    println!("Detail of nbang-catalog.json:");
+    println!("{}", catalog_json.to_colored_json_auto()?);
+    print!("Do you accept above catalog?  y/n > ");
+    io::stdout().flush()?;
+    let mut buffer = String::new();
+    io::stdin().read_line(&mut buffer)?;
+    return if buffer.trim().starts_with("y") {
+        catalog.save(repo_name)?;
+        catalog.cache_artifacts(repo_name)?;
+        Ok(true)
+    } else {
+        Ok(false)
+    };
 }
 
 fn dbang_run(artifact_full_name: &str, artifact_args: &[&str]) -> anyhow::Result<()> {
@@ -47,18 +81,8 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str]) -> anyhow::Result
     let artifact_name = artifact_parts[0];
     // validate local catalog exists or not
     if !catalog::Catalog::local_exists(repo_name)? {
-        let catalog = catalog::Catalog::fetch_from_github(repo_name)?;
-        let catalog_json = serde_json::to_string(&catalog)?;
-        println!("Detail of nbang-catalog.json:");
-        println!("{}", catalog_json.to_colored_json_auto()?);
-        print!("Do you accept above catalog?  y/n > ");
-        io::stdout().flush()?;
-        let mut buffer = String::new();
-        io::stdin().read_line(&mut buffer)?;
-        if buffer.trim().starts_with("y") {
-            catalog::save_nbang_catalog_from_json(repo_name, &catalog_json)?;
-            catalog.cache_artifacts(repo_name)?;
-        } else {
+        let result = confirm_remote_catalog(repo_name)?;
+        if !result {
             println!("Abort to accept nbang catalog!");
             return Ok(());
         }
