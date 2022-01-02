@@ -89,6 +89,32 @@ impl Catalog {
             .join("dbang-catalog.json");
         Ok(dbang_catalog_json_file.exists())
     }
+
+    pub fn list_local() -> anyhow::Result<Vec<String>> {
+        let home_dir: PathBuf = dirs::home_dir().unwrap();
+        let github_dir = Path::new(&home_dir)
+            .join(".dbang")
+            .join("catalogs")
+            .join("github");
+        let mut users = fs::read_dir(github_dir)?;
+        let mut user_list = Vec::new();
+        while let Some(file) = users.next() {
+            let user = file?;
+            let user_path = user.path();
+            if user_path.is_dir() {
+                let github_user = user.file_name();
+                let github_user = github_user.to_str().unwrap();
+                let mut repos = fs::read_dir(user_path)?;
+                while let Some(repo) = repos.next() {
+                    let repo = repo?;
+                    let repo_name = repo.file_name();
+                    let repo_name = repo_name.to_str().unwrap();
+                    user_list.push(format!("{}/{}", github_user, repo_name));
+                }
+            }
+        }
+        Ok(user_list)
+    }
 }
 
 
@@ -174,5 +200,12 @@ mod tests {
         let artifact = Artifact::read_from_local("linux-china", "hello").unwrap();
         println!("artifact = {:?}", artifact);
         println!("url = {}", artifact.get_script_http_url("linux-china"));
+    }
+
+    #[test]
+    fn test_list_catalogs() {
+        for user in Catalog::list_local().unwrap() {
+            println!("user = {}", user);
+        }
     }
 }
