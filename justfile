@@ -24,6 +24,10 @@ deno-list:
 hello:
   cargo run --package dbang --bin dbang -- run hello@linux-china world
 
+# run hello@linux-china from run subcommand
+hello-verbose:
+  cargo run --package dbang --bin dbang -- --verbose run hello@linux-china
+
 # run hello@linux-china/demo from run subcommand
 hello-demo:
   cargo run --package dbang --bin dbang -- run hello@linux-china/demo world
