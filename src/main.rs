@@ -26,6 +26,7 @@ fn main() {
     }
     if matches.subcommand().is_none() { //display help if no subcommand
         build_app().print_help().unwrap();
+        return;
     }
     // make sure DBANG_DIR ~/.dbang exist
     let dbang_dir = dbang_utils::dbang_dir();
