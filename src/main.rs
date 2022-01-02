@@ -162,15 +162,17 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) ->
     }
     let artifact = catalog::Artifact::read_from_local(repo_name, artifact_name).unwrap();
     let script_url = artifact.get_script_http_url(repo_name);
+    let permissions: Vec<String> = artifact.get_deno_permissions();
     if verbose {
         println!("[dbang] begin to run {}/{}", artifact_name, artifact_full_name);
         println!("[dbang] script url:  {}", script_url);
-        let permissions = artifact.get_deno_permissions();
+        if let Some(ref description) = artifact.description {
+            println!("[dbang] script description:  {}", description);
+        }
         if !permissions.is_empty() {
-            println!("[dbang] script permission:  {}", permissions.join(","));
+            println!("[dbang] script permissions:  {}", permissions.join(","));
         }
     }
-    let permissions: Vec<String> = artifact.get_deno_permissions();
     deno_cli::run(&script_url,
                   artifact_args,
                   &permissions,
