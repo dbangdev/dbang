@@ -20,17 +20,19 @@ pub struct Artifact {
 }
 
 impl Artifact {
-    pub fn read_from_local(github_user: &str, artifact_name: &str) -> anyhow::Result<Artifact> {
-        let catalog = Catalog::read_from_local(github_user)?;
+    pub fn read_from_local(repo_name: &str, artifact_name: &str) -> anyhow::Result<Artifact> {
+        let catalog_repo = Catalog::get_full_repo_name(repo_name);
+        let catalog = Catalog::read_from_local(&catalog_repo)?;
         let artifact = catalog.scripts.get(artifact_name).unwrap();
         Ok(artifact.clone())
     }
 
-    pub fn get_script_http_url(&self, github_user: &str) -> String {
+    pub fn get_script_http_url(&self, repo_name: &str) -> String {
         return if self.script_ref.starts_with("https://") || self.script_ref.starts_with("http://") {
             self.script_ref.to_string()
         } else {
-            format!("https://raw.githubusercontent.com/{}/dbang-catalog/main/{}", github_user, self.script_ref)
+            let catalog_repo = Catalog::get_full_repo_name(repo_name);
+            format!("https://raw.githubusercontent.com/{}/main/{}", catalog_repo, self.script_ref)
         };
     }
 
@@ -58,34 +60,35 @@ impl Catalog {
         Ok(())
     }
 
-    pub fn fetch_from_github(github_user: &str) -> anyhow::Result<Catalog> {
-        let url = format!("https://raw.githubusercontent.com/{}/dbang-catalog/main/dbang-catalog.json", github_user);
+    pub fn fetch_from_github(repo_name: &str) -> anyhow::Result<Catalog> {
+        let catalog_full_name = Catalog::get_full_repo_name(repo_name);
+        let url = format!("https://raw.githubusercontent.com/{}/main/dbang-catalog.json", catalog_full_name);
         let client = Client::new();
         let response = client.get(&url).send()?;
         let catalog: Catalog = response.json()?;
         Ok(catalog)
     }
 
-    pub fn read_from_local(github_user: &str) -> anyhow::Result<Catalog> {
+    pub fn read_from_local(repo_name: &str) -> anyhow::Result<Catalog> {
+        let catalog_full_name = Catalog::get_full_repo_name(repo_name);
         let home_dir: PathBuf = dirs::home_dir().unwrap();
         let dbang_catalog_json_file = Path::new(&home_dir)
             .join(".dbang")
             .join("catalogs/github")
-            .join(github_user)
-            .join("dbang-catalog")
+            .join(catalog_full_name)
             .join("dbang-catalog.json");
         let data = fs::read_to_string(dbang_catalog_json_file).expect("Unable to read dbang-catalog.json");
         let catalog: Catalog = serde_json::from_str(&data).expect("Unable to parse dbang-catalog.json");
         Ok(catalog)
     }
 
-    pub fn local_exists(github_user: &str) -> anyhow::Result<bool> {
+    pub fn local_exists(repo_name: &str) -> anyhow::Result<bool> {
+        let catalog_repo = Catalog::get_full_repo_name(repo_name);
         let home_dir: PathBuf = dirs::home_dir().unwrap();
         let dbang_catalog_json_file = Path::new(&home_dir)
             .join(".dbang")
             .join("catalogs/github")
-            .join(github_user)
-            .join("dbang-catalog")
+            .join(catalog_repo)
             .join("dbang-catalog.json");
         Ok(dbang_catalog_json_file.exists())
     }
@@ -115,31 +118,40 @@ impl Catalog {
         }
         Ok(user_list)
     }
+
+    pub fn get_full_repo_name(repo_name: &str) -> String {
+        return if !repo_name.contains("/") {
+            format!("{}/dbang-catalog", repo_name)
+        } else {
+            repo_name.to_string()
+        };
+    }
 }
 
 
-pub fn save_nbang_catalog_from_json(github_user: &str, json_text: &str) -> anyhow::Result<()> {
+pub fn save_nbang_catalog_from_json(repo_name: &str, json_text: &str) -> anyhow::Result<()> {
+    let catalog_full_name = Catalog::get_full_repo_name(repo_name);
     let home_dir: PathBuf = dirs::home_dir().unwrap();
     let dbang_catalog_dir = Path::new(&home_dir)
         .join(".dbang")
         .join("catalogs/github")
-        .join(github_user)
-        .join("dbang-catalog");
+        .join(catalog_full_name);
     std::fs::create_dir_all(&dbang_catalog_dir)?;
     let dbang_catalog_file = dbang_catalog_dir.join("dbang-catalog.json");
     std::fs::write(&dbang_catalog_file, json_text)?;
     Ok(())
 }
 
-pub fn save_remote_nbang_catalog(github_user: &str) -> anyhow::Result<()> {
-    let url = format!("https://raw.githubusercontent.com/{}/dbang-catalog/main/dbang-catalog.json", github_user);
+pub fn save_remote_nbang_catalog(repo_name: &str) -> anyhow::Result<()> {
+    let catalog_full_name = Catalog::get_full_repo_name(repo_name);
+    let url = format!("https://raw.githubusercontent.com/{}/main/dbang-catalog.json", catalog_full_name);
     let response = Client::builder()
         .build()?
         .get(&url)
         .header("Accept", "application/json")
         .send()?;
     let json_text = response.text()?;
-    save_nbang_catalog_from_json(github_user, &json_text)
+    save_nbang_catalog_from_json(&catalog_full_name, &json_text)
 }
 
 
