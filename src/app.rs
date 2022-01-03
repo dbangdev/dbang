@@ -63,13 +63,20 @@ pub fn build_app() -> App<'static> {
     let install_command = App::new("install")
         .about("Install app from catalog")
         .arg(
+            Arg::new("name")
+                .long("name")
+                .takes_value(true)
+                .help("custom name for script")
+                .required(false),
+        )
+        .arg(
             Arg::new("script")
                 .help("script full name")
                 .required(true)
                 .index(1)
         );
     let uninstall_command = App::new("uninstall")
-        .about("Uninstall app from catalog")
+        .about("Uninstall app")
         .arg(
             Arg::new("script")
                 .help("script full name")
