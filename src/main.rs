@@ -4,6 +4,7 @@ mod deno_versions;
 mod catalog;
 mod known_catalogs;
 mod dbang_utils;
+mod aliases;
 
 use std::io;
 use std::io::Write;
