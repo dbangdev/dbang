@@ -6,6 +6,7 @@ mod known_catalogs;
 mod dbang_utils;
 mod aliases;
 
+use std::collections::HashMap;
 use std::io;
 use std::io::Write;
 use colored_json::ToColoredJson;
@@ -44,6 +45,31 @@ fn main() {
         }
         let artifact_full_name = sub_command_args.value_of("script").unwrap();
         dbang_run(artifact_full_name, &artifact_args, verbose).unwrap();
+    } else if sub_command == "install" {
+        let artifact_full_name = sub_command_args.value_of("script").unwrap();
+        let app_name = if let Some(name) = sub_command_args.value_of("name") {
+            name.to_string()
+        } else {
+            if artifact_full_name.starts_with("http://") || artifact_full_name.starts_with("https://") {
+                artifact_full_name.split("/").last().unwrap().to_string()
+            } else if artifact_full_name.contains("@") {
+                artifact_full_name.split("@").next().unwrap().to_string()
+            } else {
+                artifact_full_name.to_string()
+            }
+        };
+        aliases::add(app_name.clone(), artifact_full_name.to_string()).unwrap();
+        println!("{} app installed", app_name);
+    } else if sub_command == "uninstall" {
+        let app_name = sub_command_args.value_of("name").unwrap();
+        aliases::remove(app_name).unwrap();
+        println!("{} uninstalled successfully", app_name);
+    } else if sub_command == "apps" {
+        let apps: HashMap<String, String> = aliases::all().unwrap();
+        println!("Local installed apps:");
+        for pair in apps {
+            println!("  {} -> {}", pair.0, pair.1);
+        }
     } else if sub_command == "catalog" {
         if sub_command_args.subcommand().is_none() { // print help if no subcommand
             build_app().find_subcommand("catalog").unwrap().clone().print_help().unwrap();
