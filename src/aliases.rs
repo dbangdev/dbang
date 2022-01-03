@@ -41,6 +41,17 @@ pub fn remove(alias: &str) -> anyhow::Result<()> {
     save(&aliases)
 }
 
+pub fn remove_by_repo_name(repo_name: &str) -> anyhow::Result<()> {
+    let mut aliases = all()?;
+    let empties: Vec<_> = aliases
+        .iter()
+        .filter(|&(_, v)| v == repo_name)
+        .map(|(k, _)| k.clone())
+        .collect();
+    for empty in empties { aliases.remove(&empty); }
+    save(&aliases)
+}
+
 mod tests {
     use super::*;
 
