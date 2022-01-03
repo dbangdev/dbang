@@ -102,7 +102,7 @@ fn main() {
             if confirm_remote_catalog(repo_name).unwrap() {
                 println!("Catalog added successfully!");
             } else {
-                println!("Abort to accept nbang catalog!".red());
+                println!("{}","Abort to accept nbang catalog!".red());
             }
         } else if catalog_sub_command == "delete" {
             let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
@@ -195,7 +195,7 @@ fn confirm_remote_catalog(repo_name: &str) -> anyhow::Result<bool> {
 fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) -> anyhow::Result<()> {
     let artifact_parts: Vec<&str> = artifact_full_name.split("@").collect();
     let repo_name = artifact_parts[1];
-    let artifact_name = artifact_parts[0];
+    let script_name = artifact_parts[0];
     // validate local catalog exists or not
     if !catalog::Catalog::local_exists(repo_name)? {
         if !confirm_remote_catalog(repo_name)? {
@@ -203,11 +203,11 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) ->
             return Ok(());
         }
     }
-    let artifact = catalog::Artifact::read_from_local(repo_name, artifact_name).unwrap();
+    let artifact = catalog::Artifact::read_from_local(repo_name, script_name).unwrap();
     let script_url = artifact.get_script_http_url(repo_name);
     let permissions: Vec<String> = artifact.get_deno_permissions();
     if verbose {
-        println!("[dbang] begin to run {}/{}", artifact_name, artifact_full_name);
+        println!("[dbang] begin to run {}/{}", script_name, artifact_full_name);
         println!("[dbang] script url:  {}", script_url);
         if let Some(ref description) = artifact.description {
             println!("[dbang] script description:  {}", description);
