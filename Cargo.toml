@@ -13,6 +13,10 @@ repository = "https://github.com/dbangdev/dbang"
 license = "Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "dbang-shim"
+path = "src/dbang-shim.rs"
+
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
