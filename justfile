@@ -20,6 +20,10 @@ catalog-add:
 deno-list:
   cargo run --package dbang --bin dbang -- deno list
 
+# List apps
+apps:
+  cargo run --package dbang --bin dbang -- apps
+
 # run hello@linux-china from run subcommand
 hello:
   cargo run --package dbang --bin dbang -- run hello@linux-china world
@@ -44,3 +48,10 @@ run2:
 build:
   cargo build --release
   cp target/release/dbang ~/bin/
+
+# display dbang help
+hello-shim:
+  cargo build --package dbang --bin dbang-shim
+  unlink ./target/hello
+  ln -s {{justfile_directory()}}/target/debug/dbang-shim ./target/hello
+  ./target/hello
