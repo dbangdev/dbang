@@ -1,7 +1,5 @@
 use std::collections::HashMap;
-use std::fs::File;
 use std::path::PathBuf;
-use serde::{Deserialize, Serialize};
 use crate::dbang_utils;
 
 fn get_aliases_file() -> PathBuf {
