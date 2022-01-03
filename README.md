@@ -3,6 +3,13 @@ DBang
 
 DBang is a CLI to manage Deno scripts on GitHub
 
+# Vocabulary
+
+* Catalog: A collection of scripts that is dang-catalog.json
+* Script: A script that is in dang-script.json, also called artifact.
+* repo_name: GitHub's repo name, eg. `nbang-catalog`, `my-script`
+* repo_full_name: repo name with GitHub's account or organization name, for example `linux-china/nbang-catalog`
+
 # Features
 
 * Deno versions management
