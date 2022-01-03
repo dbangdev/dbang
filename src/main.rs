@@ -12,6 +12,7 @@ use std::io::Write;
 use colored_json::ToColoredJson;
 use crate::app::build_app;
 use colored::*;
+use crate::catalog::Catalog;
 
 fn main() {
     let app = build_app();
@@ -106,7 +107,10 @@ fn main() {
             }
         } else if catalog_sub_command == "delete" {
             let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
-            catalog::Catalog::delete(repo_name).unwrap();
+            let repo_full_name = Catalog::get_full_repo_name(repo_name);
+            catalog::Catalog::delete(&repo_full_name).unwrap();
+            known_catalogs::remove(&repo_full_name).unwrap();
+            aliases::remove_by_repo_name(&repo_full_name).unwrap();
             println!("Catalog deleted successfully!");
         } else if catalog_sub_command == "show" {
             let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
@@ -155,11 +159,11 @@ fn main() {
             };
         } else if trust_sub_command == "add" {
             let repo_name = trust_sub_command_args.value_of("repo_name").unwrap().to_string();
-            known_catalogs::add(&repo_name).unwrap();
+            known_catalogs::add(&Catalog::get_full_repo_name(&repo_name)).unwrap();
             println!("Catalog in trusted list now!");
         } else if trust_sub_command == "delete" {
             let repo_name = trust_sub_command_args.value_of("repo_name").unwrap().to_string();
-            known_catalogs::remove(&repo_name).unwrap();
+            known_catalogs::remove(&Catalog::get_full_repo_name(&repo_name)).unwrap();
             println!("Catalog removed from trusted list!");
         } else {
             println!("{}", "Unknown subcommand");
