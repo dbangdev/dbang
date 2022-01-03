@@ -64,10 +64,20 @@ pub fn build_app() -> App<'static> {
         .about("Install app from catalog")
         .arg(
             Arg::new("script")
-                .takes_value(true)
-                .help("script name")
-                .required(true),
+                .help("script full name")
+                .required(true)
+                .index(1)
         );
+    let uninstall_command = App::new("uninstall")
+        .about("Uninstall app from catalog")
+        .arg(
+            Arg::new("script")
+                .help("script full name")
+                .required(true)
+                .index(1)
+        );
+    let apps_command = App::new("apps")
+        .about("List installed apps");
     let catalog_command = App::new("catalog")
         .about("Catalog management")
         .subcommand(App::new("list")
@@ -144,6 +154,8 @@ pub fn build_app() -> App<'static> {
         .subcommand(deno_command)
         .subcommand(trust_command)
         .subcommand(install_command)
+        .subcommand(uninstall_command)
+        .subcommand(apps_command)
         .subcommand(catalog_command)
         .subcommand(complete_command)
         .arg(Arg::new("script")
