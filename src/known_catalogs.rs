@@ -1,7 +1,6 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
-use crate::catalog::Catalog;
 use crate::dbang_utils;
 
 fn get_known_catalogs_file() -> PathBuf {
@@ -19,14 +18,14 @@ pub fn list() -> anyhow::Result<Vec<String>> {
     }
 }
 
-pub fn include(repo_name: &str) -> anyhow::Result<bool> {
-    let catalog_full_name = Catalog::get_full_repo_name(repo_name);
+pub fn include(catalog_full_name: &str) -> anyhow::Result<bool> {
+    let catalog_full_name = catalog_full_name.to_string();
     let known_catalogs = list()?;
     Ok(known_catalogs.contains(&catalog_full_name))
 }
 
-pub fn add(repo_name: &str) -> anyhow::Result<()> {
-    let catalog_full_name = Catalog::get_full_repo_name(repo_name);
+pub fn add(catalog_full_name: &str) -> anyhow::Result<()> {
+    let catalog_full_name = catalog_full_name.to_string();
     let mut known_catalogs = list().unwrap();
     if !known_catalogs.contains(&catalog_full_name) {
         known_catalogs.push(catalog_full_name);
@@ -36,9 +35,9 @@ pub fn add(repo_name: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn remove(repo_name: &str) -> anyhow::Result<()> {
-    let catalog_full_name = Catalog::get_full_repo_name(repo_name);
+pub fn remove(catalog_full_name: &str) -> anyhow::Result<()> {
     let mut known_catalogs = list().unwrap();
+    let catalog_full_name = catalog_full_name.to_string();
     if known_catalogs.contains(&catalog_full_name) {
         let index = known_catalogs.iter().position(|x| *x == catalog_full_name).unwrap();
         known_catalogs.remove(index);
