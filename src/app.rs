@@ -66,7 +66,7 @@ pub fn build_app() -> App<'static> {
             Arg::new("name")
                 .long("name")
                 .takes_value(true)
-                .help("custom name for script")
+                .help("Custom app name for script")
                 .required(false),
         )
         .arg(
@@ -78,8 +78,8 @@ pub fn build_app() -> App<'static> {
     let uninstall_command = App::new("uninstall")
         .about("Uninstall app")
         .arg(
-            Arg::new("script")
-                .help("script full name")
+            Arg::new("name")
+                .help("App name for script")
                 .required(true)
                 .index(1)
         );
