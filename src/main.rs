@@ -11,7 +11,7 @@ use std::io;
 use std::io::Write;
 use colored_json::ToColoredJson;
 use crate::app::build_app;
-// use colored::*;
+use colored::*;
 
 fn main() {
     let app = build_app();
@@ -31,10 +31,10 @@ fn main() {
         build_app().print_help().unwrap();
         return;
     }
-    // make sure DBANG_DIR ~/.dbang exist
-    let dbang_dir = dbang_utils::dbang_dir();
-    if !dbang_dir.exists() {
-        std::fs::create_dir(&dbang_dir).unwrap();
+    // make sure DBANG_DIR ~/.dbang/bin exist
+    let dbang_bin_dir = dbang_utils::dbang_dir().join("bin");
+    if !dbang_bin_dir.exists() {
+        std::fs::create_dir_all(&dbang_bin_dir).unwrap();
     }
     // parse subcommand and run
     let (sub_command, sub_command_args) = matches.subcommand().unwrap();
@@ -58,17 +58,33 @@ fn main() {
                 artifact_full_name.to_string()
             }
         };
+        if app_name == "dbang" || app_name == "dbang-shim" {
+            println!("{}", "dbang and dbang-shim are reserved names, please use other names".red());
+            return;
+        }
         aliases::add(app_name.clone(), artifact_full_name.to_string()).unwrap();
+        //create soft link
+        let dbang_shim = dbang_bin_dir.join("dbang-shim");
+        let app_link = dbang_bin_dir.join(&app_name);
+        symlink::symlink_file(dbang_shim, app_link).unwrap();
         println!("{} app installed", app_name);
     } else if sub_command == "uninstall" {
         let app_name = sub_command_args.value_of("name").unwrap();
         aliases::remove(app_name).unwrap();
+        let app_link = dbang_bin_dir.join(&app_name);
+        if app_link.exists() {
+            symlink::remove_symlink_file(app_link).unwrap();
+        }
         println!("{} uninstalled successfully", app_name);
     } else if sub_command == "apps" {
         let apps: HashMap<String, String> = aliases::all().unwrap();
-        println!("Local installed apps:");
-        for pair in apps {
-            println!("  {} -> {}", pair.0, pair.1);
+        if apps.is_empty() {
+            println!("No apps installed");
+        } else {
+            println!("Local installed apps:");
+            for pair in apps {
+                println!("  {} -> {}", pair.0, pair.1);
+            }
         }
     } else if sub_command == "catalog" {
         if sub_command_args.subcommand().is_none() { // print help if no subcommand
@@ -86,7 +102,7 @@ fn main() {
             if confirm_remote_catalog(repo_name).unwrap() {
                 println!("Catalog added successfully!");
             } else {
-                println!("Abort to accept nbang catalog!");
+                println!("Abort to accept nbang catalog!".red());
             }
         } else if catalog_sub_command == "delete" {
             let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
