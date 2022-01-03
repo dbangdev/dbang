@@ -48,6 +48,8 @@ run2:
 build:
   cargo build --release
   cp target/release/dbang ~/bin/
+  cp target/release/dbang ~/.dbang/bin/
+  cp target/release/dbang-shim ~/.dbang/bin/
 
 # display dbang help
 hello-shim:
