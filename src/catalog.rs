@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use reqwest::blocking::Client;
 use std::{fs};
-use crate::{dbang_utils, deno_cli};
+use crate::{dbang_utils, deno_cli, deno_versions};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Catalog {
@@ -49,12 +49,19 @@ impl Artifact {
         }
         return vec![];
     }
+
+    pub fn get_deno_bin_path(&self) -> String {
+        if let Some(deno_version) = &self.deno {
+            return String::from(deno_versions::get_deno_binary(deno_version).to_string_lossy());
+        }
+        return "deno".to_string();
+    }
 }
 
 impl Catalog {
     pub fn cache_artifacts(&self, github_user: &str) -> anyhow::Result<()> {
         for (_k, v) in self.scripts.iter() {
-            deno_cli::cache(&v.get_script_http_url(github_user))?;
+            deno_cli::cache(&v.get_deno_bin_path(), &v.get_script_http_url(github_user))?;
         };
         Ok(())
     }
