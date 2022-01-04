@@ -6,7 +6,12 @@ use std::io;
 use crate::dbang_utils;
 
 pub fn get_deno_binary(version: &str) -> PathBuf {
-    get_deno_home(version).join("deno")
+    let deno_bin_path = get_deno_home(version).join("deno");
+    if !deno_bin_path.exists() {
+        println!("{} not found and begin to install Deno ...", version);
+        install(version).unwrap();
+    }
+    deno_bin_path
 }
 
 pub fn get_deno_home(version: &str) -> PathBuf {
