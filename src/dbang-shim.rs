@@ -4,8 +4,6 @@ mod catalog;
 mod deno_cli;
 mod deno_versions;
 
-use std::process::{Command, Stdio};
-
 pub fn main() {
     let mut alias: String = std::env::args().nth(0).unwrap();
     if alias.contains("/") {
