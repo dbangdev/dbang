@@ -103,7 +103,7 @@ fn main() {
             if confirm_remote_catalog(repo_name).unwrap() {
                 println!("Catalog added successfully!");
             } else {
-                println!("{}","Abort to accept nbang catalog!".red());
+                println!("{}", "Abort to accept nbang catalog!".red());
             }
         } else if catalog_sub_command == "delete" {
             let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
@@ -220,7 +220,7 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) ->
             println!("[dbang] script permissions:  {}", permissions.join(","));
         }
     }
-    deno_cli::run(&script_url,
+    deno_cli::run(&artifact.get_deno_bin_path(), &script_url,
                   artifact_args,
                   &permissions,
     )?;
