@@ -36,7 +36,7 @@ pub fn list() -> anyhow::Result<Vec<String>> {
 }
 
 pub fn install(version: &str) -> anyhow::Result<()> {
-    let deno_bin_path = get_deno_binary(version);
+    let deno_bin_path = get_deno_home(version).join("deno");
     if !deno_bin_path.exists() {
         download(version)?;
         unzip_deno(version)?;
