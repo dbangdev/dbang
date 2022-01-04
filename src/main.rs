@@ -10,6 +10,7 @@ use std::collections::HashMap;
 use std::io;
 use std::io::Write;
 use colored_json::ToColoredJson;
+use which::which;
 use crate::app::build_app;
 use colored::*;
 use crate::catalog::Catalog;
@@ -65,9 +66,9 @@ fn main() {
         }
         aliases::add(app_name.clone(), artifact_full_name.to_string()).unwrap();
         //create soft link
-        let dbang_shim = dbang_bin_dir.join("dbang-shim");
+        let dbang_shim_path = which("dbang-shim").unwrap();
         let app_link = dbang_bin_dir.join(&app_name);
-        symlink::symlink_file(dbang_shim, app_link).unwrap();
+        symlink::symlink_file(dbang_shim_path, app_link).unwrap();
         println!("{} app installed", app_name);
     } else if sub_command == "uninstall" {
         let app_name = sub_command_args.value_of("name").unwrap();
