@@ -2,6 +2,7 @@ mod dbang_utils;
 mod aliases;
 mod catalog;
 mod deno_cli;
+mod deno_versions;
 
 use std::process::{Command, Stdio};
 
@@ -26,7 +27,7 @@ fn dbang_run(script_full_name: &str, script_args: &[&str]) -> anyhow::Result<()>
     let artifact = catalog::Artifact::read_from_local(repo_name, script_name).unwrap();
     let script_url = artifact.get_script_http_url(repo_name);
     let permissions: Vec<String> = artifact.get_deno_permissions();
-    deno_cli::run(&script_url, script_args, &permissions)?;
+    deno_cli::run(&artifact.get_deno_bin_path(), &script_url, script_args, &permissions)?;
     Ok(())
 }
 
