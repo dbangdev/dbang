@@ -31,7 +31,7 @@ impl Artifact {
             self.script_ref.to_string()
         } else {
             let catalog_repo = Catalog::get_full_repo_name(repo_name);
-            format!("https://raw.githubusercontent.com/{}/main/{}", catalog_repo, self.script_ref)
+            format!("https://raw.githubusercontent.com/{}/HEAD/{}", catalog_repo, self.script_ref)
         };
     }
 
@@ -68,7 +68,7 @@ impl Catalog {
 
     pub fn fetch_from_github(repo_name: &str) -> anyhow::Result<Catalog> {
         let catalog_full_name = Catalog::get_full_repo_name(repo_name);
-        let url = format!("https://raw.githubusercontent.com/{}/main/dbang-catalog.json", catalog_full_name);
+        let url = format!("https://raw.githubusercontent.com/{}/HEAD/dbang-catalog.json", catalog_full_name);
         let client = Client::new();
         let response = client.get(&url).send()?;
         let catalog: Catalog = response.json()?;
@@ -152,7 +152,7 @@ impl Catalog {
 
 pub fn save_remote_nbang_catalog(repo_name: &str) -> anyhow::Result<()> {
     let catalog_full_name = Catalog::get_full_repo_name(repo_name);
-    let url = format!("https://raw.githubusercontent.com/{}/main/dbang-catalog.json", catalog_full_name);
+    let url = format!("https://raw.githubusercontent.com/{}/HEAD/dbang-catalog.json", catalog_full_name);
     let response = Client::builder()
         .build()?
         .get(&url)
