@@ -68,7 +68,7 @@ impl Catalog {
 
     pub fn fetch_from_github(repo_name: &str) -> anyhow::Result<Catalog> {
         let catalog_full_name = Catalog::get_full_repo_name(repo_name);
-        let url = format!("https://raw.githubusercontent.com/{}/HEAD/dbang-catalog.json", catalog_full_name);
+        let url = get_dbang_catalog_url_on_github(&catalog_full_name);
         let client = Client::new();
         let response = client.get(&url).send()?;
         let catalog: Catalog = response.json()?;
@@ -152,12 +152,7 @@ impl Catalog {
 
 pub fn save_remote_nbang_catalog(repo_name: &str) -> anyhow::Result<()> {
     let catalog_full_name = Catalog::get_full_repo_name(repo_name);
-    let github_auth_token = dbang_utils::github_auth_token();
-    let url = if let Some(token) = github_auth_token {
-        format!("https://{}@raw.githubusercontent.com/{}/HEAD/dbang-catalog.json", token, catalog_full_name)
-    } else {
-        format!("https://raw.githubusercontent.com/{}/HEAD/dbang-catalog.json", catalog_full_name)
-    };
+    let url = get_dbang_catalog_url_on_github(&catalog_full_name);
     let response = Client::builder()
         .build()?
         .get(&url)
@@ -165,6 +160,15 @@ pub fn save_remote_nbang_catalog(repo_name: &str) -> anyhow::Result<()> {
         .send()?;
     let catalog = response.json::<Catalog>()?;
     catalog.save(&catalog_full_name)
+}
+
+fn get_dbang_catalog_url_on_github(catalog_full_name: &str) -> String {
+    let github_auth_token = dbang_utils::github_auth_token();
+    return if let Some(token) = github_auth_token {
+        format!("https://{}@raw.githubusercontent.com/{}/HEAD/dbang-catalog.json", token, catalog_full_name)
+    } else {
+        format!("https://raw.githubusercontent.com/{}/HEAD/dbang-catalog.json", catalog_full_name)
+    };
 }
 
 
