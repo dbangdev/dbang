@@ -152,7 +152,12 @@ impl Catalog {
 
 pub fn save_remote_nbang_catalog(repo_name: &str) -> anyhow::Result<()> {
     let catalog_full_name = Catalog::get_full_repo_name(repo_name);
-    let url = format!("https://raw.githubusercontent.com/{}/HEAD/dbang-catalog.json", catalog_full_name);
+    let github_auth_token = dbang_utils::github_auth_token();
+    let url = if let Some(token) = github_auth_token {
+        format!("https://{}@raw.githubusercontent.com/{}/HEAD/dbang-catalog.json", token, catalog_full_name)
+    } else {
+        format!("https://raw.githubusercontent.com/{}/HEAD/dbang-catalog.json", catalog_full_name)
+    };
     let response = Client::builder()
         .build()?
         .get(&url)
