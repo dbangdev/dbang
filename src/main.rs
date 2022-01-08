@@ -47,6 +47,11 @@ fn main() {
         }
         let artifact_full_name = sub_command_args.value_of("script").unwrap();
         dbang_run(artifact_full_name, &artifact_args, verbose).unwrap();
+    }
+    if sub_command == "open" {
+        let artifact_full_name = sub_command_args.value_of("script").unwrap();
+        let url = format!("https://github.com/{}", artifact_full_name);
+        dbang_utils::open_url(&url).unwrap();
     } else if sub_command == "install" {
         let artifact_full_name = sub_command_args.value_of("script").unwrap();
         let app_name = if let Some(name) = sub_command_args.value_of("name") {
