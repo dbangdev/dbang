@@ -1,4 +1,5 @@
 use std::path::{Path, PathBuf};
+use std::process::{Command};
 
 pub fn dbang_dir() -> PathBuf {
     let home_dir: PathBuf = dirs::home_dir().unwrap();
@@ -15,6 +16,25 @@ pub fn github_auth_token() -> Option<String> {
         }
     }
     None
+}
+
+pub fn open_url(url: &str) -> anyhow::Result<()> {
+    if cfg!(target_os = "macos") {
+        Command::new("open")
+            .arg(url)
+            .spawn()?;
+    } else if cfg!(target_os = "windows") {
+        Command::new("cmd")
+            .arg("/c")
+            .arg("start")
+            .arg(url)
+            .spawn()?;
+    } else {
+        Command::new("xdg-open")
+            .arg(url)
+            .spawn()?;
+    };
+    Ok(())
 }
 
 mod tests {
