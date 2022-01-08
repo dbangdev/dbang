@@ -18,6 +18,14 @@ pub fn build_app() -> App<'static> {
             .index(2)
             .multiple_values(true)
     );
+    let open_command = App::new("open")
+        .about("Open catalog on GitHub")
+        .arg(
+            Arg::new("script")
+                .required(true)
+                .help("script name")
+                .index(1)
+        );
     let deno_command = App::new("deno")
         .about("Deno version management")
         .subcommand(App::new("list")
@@ -158,6 +166,7 @@ pub fn build_app() -> App<'static> {
                 .required(false),
         )
         .subcommand(run_command)
+        .subcommand(open_command)
         .subcommand(deno_command)
         .subcommand(trust_command)
         .subcommand(install_command)
