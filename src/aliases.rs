@@ -52,6 +52,7 @@ pub fn remove_by_repo_name(repo_name: &str) -> anyhow::Result<()> {
     save(&aliases)
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

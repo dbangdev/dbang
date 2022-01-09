@@ -171,7 +171,7 @@ fn get_dbang_catalog_url_on_github(catalog_full_name: &str) -> String {
     };
 }
 
-
+#[cfg(test)]
 mod tests {
     use super::*;
 

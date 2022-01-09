@@ -37,6 +37,7 @@ pub fn open_url(url: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

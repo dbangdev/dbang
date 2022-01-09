@@ -47,6 +47,7 @@ pub fn remove(catalog_full_name: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

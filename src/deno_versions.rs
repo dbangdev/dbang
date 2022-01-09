@@ -101,6 +101,7 @@ pub fn unzip_deno(version: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

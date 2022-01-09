@@ -29,6 +29,7 @@ fn dbang_run(script_full_name: &str, script_args: &[&str]) -> anyhow::Result<()>
     Ok(())
 }
 
+#[cfg(test)]
 mod tests {
     #[test]
     fn test_find_script_name() {}
