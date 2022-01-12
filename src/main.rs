@@ -65,8 +65,8 @@ fn main() {
                 artifact_full_name.to_string()
             }
         };
-        if app_name == "dbang" || app_name == "dbang-shim" {
-            println!("{}", "dbang and dbang-shim are reserved names, please use other names".red());
+        if app_name == "dbang" || app_name.starts_with("dbang-") {
+            println!("{}", "dbang and dbang-* are reserved names, please use other names".red());
             return;
         }
         aliases::add(app_name.clone(), artifact_full_name.to_string()).unwrap();
