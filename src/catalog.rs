@@ -14,6 +14,8 @@ pub struct Artifact {
     #[serde(rename(serialize = "script-ref", deserialize = "script-ref"))]
     pub script_ref: String,
     pub description: Option<String>,
+    #[serde(rename(serialize = "import-map", deserialize = "import-map"))]
+    pub import_map: Option<String>,
     pub deno: Option<String>,
     pub permissions: Option<Vec<String>>,
 }
@@ -32,6 +34,16 @@ impl Artifact {
         } else {
             let catalog_repo = Catalog::get_full_repo_name(repo_name);
             format!("https://raw.githubusercontent.com/{}/HEAD/{}", catalog_repo, self.script_ref)
+        };
+    }
+
+    pub fn get_import_map_http_url(&self, repo_name: &str) -> String {
+        let import_map = self.import_map.as_ref().unwrap().clone();
+        return if import_map.starts_with("https://") || import_map.starts_with("http://") {
+            import_map
+        } else {
+            let catalog_repo = Catalog::get_full_repo_name(repo_name);
+            format!("https://raw.githubusercontent.com/{}/HEAD/{}", catalog_repo, import_map)
         };
     }
 
