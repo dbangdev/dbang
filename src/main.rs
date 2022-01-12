@@ -174,8 +174,6 @@ fn main() {
         } else {
             println!("{}", "Unknown subcommand");
         }
-    } else {
-        println!("{}", "Unknown subcommand");
     }
 }
 
@@ -227,10 +225,7 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) ->
             println!("[dbang] script permissions:  {}", permissions.join(","));
         }
     }
-    deno_cli::run(&artifact.get_deno_bin_path(), &script_url,
-                  artifact_args,
-                  &permissions,
-    )?;
+    deno_cli::run(repo_name, &artifact, artifact_args)?;
     Ok(())
 }
 
