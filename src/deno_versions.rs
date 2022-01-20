@@ -14,6 +14,10 @@ pub fn get_deno_binary(version: &str) -> PathBuf {
     deno_bin_path
 }
 
+pub fn get_default_deno() -> PathBuf {
+    dbang_utils::dbang_dir().join("bin/deno")
+}
+
 pub fn get_deno_home(version: &str) -> PathBuf {
     dbang_utils::dbang_dir()
         .join("deno")
@@ -41,6 +45,16 @@ pub fn install(version: &str) -> anyhow::Result<()> {
         download(version)?;
         unzip_deno(version)?;
     }
+    Ok(())
+}
+
+pub fn link_as_default(version: &str) -> anyhow::Result<()> {
+    let target_deno_bin = get_deno_binary(version);
+    let default_deno_bin_link = dbang_utils::dbang_dir().join("bin/deno");
+    if default_deno_bin_link.exists() {
+        symlink::remove_symlink_file(&default_deno_bin_link).unwrap();
+    }
+    symlink::symlink_file(target_deno_bin, default_deno_bin_link).unwrap();
     Ok(())
 }
 
