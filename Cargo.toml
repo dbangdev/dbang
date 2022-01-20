@@ -1,6 +1,6 @@
 [package]
 name = "dbang"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = ["linux_china <libing.chen@gmail.com>"]
 description = "CLI to manage Deno scripts"
