@@ -23,9 +23,7 @@ fn dbang_run(script_full_name: &str, script_args: &[&str]) -> anyhow::Result<()>
     let repo_name = artifact_parts[1];
     let script_name = artifact_parts[0];
     let artifact = catalog::Artifact::read_from_local(repo_name, script_name).unwrap();
-    let script_url = artifact.get_script_http_url(repo_name);
-    let permissions: Vec<String> = artifact.get_deno_permissions();
-    deno_cli::run(&artifact.get_deno_bin_path(), &script_url, script_args, &permissions)?;
+    deno_cli::run(repo_name, &artifact, script_args)?;
     Ok(())
 }
 
