@@ -66,6 +66,10 @@ impl Artifact {
         if let Some(deno_version) = &self.deno {
             return String::from(deno_versions::get_deno_binary(deno_version).to_string_lossy());
         }
+        let default_deno = deno_versions::get_default_deno();
+        if default_deno.exists() {
+            return String::from(default_deno.to_string_lossy());
+        }
         return "deno".to_string();
     }
 }
