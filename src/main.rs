@@ -65,8 +65,8 @@ fn main() {
                 artifact_full_name.to_string()
             }
         };
-        if app_name == "dbang" || app_name.starts_with("dbang-") {
-            println!("{}", "dbang and dbang-* are reserved names, please use other names".red());
+        if app_name == "dbang" || app_name.starts_with("dbang-") || app_name == "deno" {
+            println!("{}", "dbang, deno and dbang-* are reserved names, please use other names".red());
             return;
         }
         aliases::add(app_name.clone(), artifact_full_name.to_string()).unwrap();
@@ -139,16 +139,25 @@ fn main() {
             };
         } else if deno_sub_command == "add" {
             let mut deno_version = deno_sub_command_args.value_of("version").unwrap().to_string();
+            let as_default = deno_sub_command_args.is_present("default");
             if deno_version.starts_with("v") {
                 deno_version = deno_version[1..].to_string();
             }
             println!("Begin to install Deno {} ...", deno_version);
             deno_versions::install(&deno_version).unwrap();
             println!("Deno {} installed successfully!", deno_version);
+            if as_default {
+                deno_versions::link_as_default(&deno_version).unwrap();
+                println!("Default deno switched to {}", deno_version);
+            }
         } else if deno_sub_command == "delete" {
             let deno_version = deno_sub_command_args.value_of("version").unwrap();
             deno_versions::delete(deno_version).unwrap();
             println!("Deno deleted successfully!");
+        } else if deno_sub_command == "default" {
+            let deno_version = deno_sub_command_args.value_of("version").unwrap();
+            deno_versions::link_as_default(deno_version).unwrap();
+            println!("Default deno switched to {}", deno_version);
         } else {
             println!("{}", "Unknown subcommand");
         }
