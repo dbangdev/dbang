@@ -142,9 +142,9 @@ fn main() {
             if deno_version.starts_with("v") {
                 deno_version = deno_version[1..].to_string();
             }
-            println!("Begin to install Deno...");
+            println!("Begin to install Deno {} ...", deno_version);
             deno_versions::install(&deno_version).unwrap();
-            println!("Deno installed successfully!");
+            println!("Deno {} installed successfully!", deno_version);
         } else if deno_sub_command == "delete" {
             let deno_version = deno_sub_command_args.value_of("version").unwrap();
             deno_versions::delete(deno_version).unwrap();
