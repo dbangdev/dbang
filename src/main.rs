@@ -73,6 +73,9 @@ fn main() {
         //create soft link
         let dbang_shim_path = which("dbang-shim").unwrap();
         let app_link = dbang_bin_dir.join(&app_name);
+        if app_link.exists() {
+            symlink::remove_symlink_file(&app_link).unwrap();
+        }
         symlink::symlink_file(dbang_shim_path, app_link).unwrap();
         println!("{} app installed", app_name);
     } else if sub_command == "uninstall" {
