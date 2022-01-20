@@ -33,6 +33,13 @@ pub fn build_app() -> App<'static> {
         )
         .subcommand(App::new("add")
             .about("Install Deno with version")
+            .arg(
+                Arg::new("default")
+                    .long("default")
+                    .takes_value(false)
+                    .help("Set as default version")
+                    .required(false)
+            )
             .arg(Arg::new("version")
                 .required(true)
                 .help("Deno version")
