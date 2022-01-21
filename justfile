@@ -1,6 +1,6 @@
 #!/usr/bin/env just --justfile
 
-DBANG_VERSION := "0.1.6"
+DBANG_VERSION := "0.1.7"
 
 # display dbang help
 help:
