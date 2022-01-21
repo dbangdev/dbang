@@ -14,6 +14,7 @@ pub struct Artifact {
     #[serde(rename(serialize = "script-ref", deserialize = "script-ref"))]
     pub script_ref: String,
     pub description: Option<String>,
+    pub compat: Option<bool>,
     #[serde(rename(serialize = "import-map", deserialize = "import-map"))]
     pub import_map: Option<String>,
     pub deno: Option<String>,
