@@ -48,6 +48,12 @@ impl Artifact {
         };
     }
 
+    pub fn get_location(&self, repo_name: &str) -> String {
+        let catalog_repo = Catalog::get_full_repo_name(repo_name);
+        dbang_utils::dbang_dir().join("catalogs/github").join(catalog_repo).join("deno.json");
+        format!("https://raw.githubusercontent.com/{}/HEAD/{}", catalog_repo, import_map)
+    }
+
     pub fn get_deno_permissions(&self) -> Vec<String> {
         if let Some(permissions) = &self.permissions {
             return permissions.iter().map(|x| {
@@ -112,6 +118,10 @@ impl Catalog {
         let dbang_catalog_file = dbang_catalog_dir.join("dbang-catalog.json");
         let json_text = serde_json::to_string(self)?;
         std::fs::write(&dbang_catalog_file, json_text)?;
+        let deno_config_file = dbang_catalog_dir.join("deno.json");
+        if !deno_config_file.exists() {
+            std::fs::write(&deno_config_file, "{}")?;
+        }
         Ok(())
     }
 
