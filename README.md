@@ -24,6 +24,11 @@ DBang is a CLI to manage Deno scripts on GitHub
 * Trust user's scripts by `dbang trust <user>`
 * Private repo support by DENO_AUTH_TOKENS
 
+# Web Storage Support
+
+DBang use `--config ~/.dbang/catalogs/github/linux-china/nbang-catalog.json` to separate different catalogs, and it
+means scripts in same dbang-catalog.json would share the same storage.
+
 # References
 
 * JBang: [jbang.dev](https://jbang.dev)
