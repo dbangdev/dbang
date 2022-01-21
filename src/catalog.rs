@@ -19,6 +19,8 @@ pub struct Artifact {
     #[serde(rename(serialize = "import-map", deserialize = "import-map"))]
     pub import_map: Option<String>,
     pub deno: Option<String>,
+    /// target os and arch, format as `os-arch`
+    pub target: Option<String>,
     pub permissions: Option<Vec<String>>,
 }
 
@@ -82,6 +84,18 @@ impl Artifact {
             return String::from(default_deno.to_string_lossy());
         }
         return "deno".to_string();
+    }
+
+    pub fn is_target_compatible(&self) -> bool {
+        if let Some(target) = &self.target {
+            let os = std::env::consts::OS;
+            let arch = std::env::consts::ARCH;
+            let full_name = format!("{}-{}", os, arch);
+            return target.split(",").any(|x| {
+                x == os || x == full_name
+            });
+        }
+        return true;
     }
 }
 
@@ -272,6 +286,24 @@ mod tests {
     fn test_list_catalogs() {
         for user in Catalog::list_local().unwrap() {
             println!("user = {}", user);
+        }
+    }
+
+    #[test]
+    fn test_is_target_compatible() {
+        let mut artifact = Artifact {
+            script_ref: "hello.ts".to_string(),
+            description: Some("Hello world".to_string()),
+            target: Some("macos".to_string()),
+            deno: None,
+            import_map: None,
+            permissions: None,
+            compat: None,
+        };
+        if cfg!(target_os = "macos") {
+            assert!(artifact.is_target_compatible());
+        } else {
+            assert!(!artifact.is_target_compatible());
         }
     }
 }
