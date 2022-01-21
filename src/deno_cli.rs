@@ -16,6 +16,8 @@ pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str]) -> anyhow::Resul
             command.arg("--compat");
         }
     }
+    command.arg("--config");
+    command.arg(artifact.get_deno_config(repo_name));
     let output = command
         .arg(artifact.get_script_http_url(repo_name))
         .args(args)
