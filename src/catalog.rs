@@ -48,10 +48,13 @@ impl Artifact {
         };
     }
 
-    pub fn get_location(&self, repo_name: &str) -> String {
+    pub fn get_deno_config(&self, repo_name: &str) -> String {
         let catalog_repo = Catalog::get_full_repo_name(repo_name);
-        dbang_utils::dbang_dir().join("catalogs/github").join(catalog_repo).join("deno.json");
-        format!("https://raw.githubusercontent.com/{}/HEAD/{}", catalog_repo, import_map)
+        let deno_config_file = dbang_utils::dbang_dir().join("catalogs/github").join(catalog_repo).join("deno.json");
+        if !deno_config_file.exists() {
+            std::fs::write(&deno_config_file, "{}").unwrap();
+        }
+        String::from(deno_config_file.to_string_lossy())
     }
 
     pub fn get_deno_permissions(&self) -> Vec<String> {
