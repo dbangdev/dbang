@@ -11,6 +11,11 @@ pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str]) -> anyhow::Resul
         command.arg("--import-map");
         command.arg(artifact.get_import_map_http_url(repo_name));
     }
+    if let Some(compat) = artifact.compat {
+        if compat {
+            command.arg("--compat");
+        }
+    }
     let output = command
         .arg(artifact.get_script_http_url(repo_name))
         .args(args)
