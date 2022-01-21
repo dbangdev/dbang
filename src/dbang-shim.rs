@@ -23,7 +23,7 @@ fn dbang_run(script_full_name: &str, script_args: &[&str]) -> anyhow::Result<()>
     let repo_name = artifact_parts[1];
     let script_name = artifact_parts[0];
     let artifact = catalog::Artifact::read_from_local(repo_name, script_name).unwrap();
-    deno_cli::run(repo_name, &artifact, script_args)?;
+    deno_cli::run(repo_name, &artifact, script_args, false)?;
     Ok(())
 }
 

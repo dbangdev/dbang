@@ -240,18 +240,18 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) ->
             println!("[dbang] script permissions:  {}", permissions.join(","));
         }
     }
-    deno_cli::run(repo_name, &artifact, artifact_args)?;
+    deno_cli::run(repo_name, &artifact, artifact_args, verbose)?;
     Ok(())
 }
 
-fn dbang_run_script(artifact_full_name: &str, artifact_args: &[&str], _verbose: bool) -> anyhow::Result<()> {
+fn dbang_run_script(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) -> anyhow::Result<()> {
     let dbang_catalog_file = std::env::current_dir()?.join("dbang-catalog.json");
     if !dbang_catalog_file.exists() {
         Err(anyhow::anyhow!("dbang-catalog.json is not in current directory!"))
     } else {
         let catalog = catalog::Catalog::read_from_file(&dbang_catalog_file)?;
         if let Some(artifact) = catalog.scripts.get(artifact_full_name) {
-            deno_cli::run_local(artifact, artifact_args)?;
+            deno_cli::run_local(artifact, artifact_args,verbose)?;
             Ok(())
         } else {
             Err(anyhow::anyhow!("{} is not in dbang-catalog.json!", artifact_full_name))

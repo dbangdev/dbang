@@ -1,7 +1,7 @@
 use std::process::{Command, Output, Stdio};
 use crate::catalog::Artifact;
 
-pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str]) -> anyhow::Result<Output> {
+pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str], verbose: bool) -> anyhow::Result<Output> {
     let mut command = Command::new(artifact.get_deno_bin_path());
     command.arg("run").arg("--no-check");
     if artifact.permissions.is_some() {
@@ -18,9 +18,12 @@ pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str]) -> anyhow::Resul
     }
     command.arg("--config");
     command.arg(artifact.get_deno_config(repo_name));
+    command.arg(artifact.get_script_http_url(repo_name));
+    command.args(args);
+    if verbose {
+        println!("[dbang] command line:  {:?}", command);
+    }
     let output = command
-        .arg(artifact.get_script_http_url(repo_name))
-        .args(args)
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -28,7 +31,7 @@ pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str]) -> anyhow::Resul
     Ok(output)
 }
 
-pub fn run_local(artifact: &Artifact, args: &[&str]) -> anyhow::Result<Output> {
+pub fn run_local(artifact: &Artifact, args: &[&str], verbose: bool) -> anyhow::Result<Output> {
     let mut command = Command::new(artifact.get_deno_bin_path());
     command.arg("run").arg("--no-check");
     if artifact.permissions.is_some() {
@@ -43,9 +46,12 @@ pub fn run_local(artifact: &Artifact, args: &[&str]) -> anyhow::Result<Output> {
             command.arg("--compat");
         }
     }
+    command.arg(&artifact.script_ref);
+    command.args(args);
+    if verbose {
+        println!("[dbang] command line:  {:?}", command);
+    }
     let output = command
-        .arg(&artifact.script_ref)
-        .args(args)
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
