@@ -14,13 +14,19 @@ pub struct Catalog {
 pub struct Artifact {
     #[serde(rename(serialize = "script-ref", deserialize = "script-ref"))]
     pub script_ref: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub compat: Option<bool>,
     #[serde(rename(serialize = "import-map", deserialize = "import-map"))]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub import_map: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub deno: Option<String>,
     /// target os and arch, format as `os-arch`
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub target: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub permissions: Option<Vec<String>>,
 }
 
