@@ -111,7 +111,11 @@ fn main() {
             let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
             let repo_full_name = Catalog::get_full_repo_name(repo_name);
             if confirm_remote_catalog(&repo_full_name).unwrap() {
-                println!("Catalog added successfully!");
+                if catalog_sub_command == "add" {
+                    println!("Catalog added successfully!");
+                } else {
+                    println!("Catalog updated successfully!");
+                }
             } else {
                 println!("{}", "Abort to accept nbang catalog!".red());
             }
