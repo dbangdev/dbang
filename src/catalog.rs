@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use reqwest::blocking::Client;
 use std::{fs};
+use std::path::Path;
 use crate::{dbang_utils, deno_cli, deno_versions};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -107,8 +108,14 @@ impl Catalog {
             .join("catalogs/github")
             .join(catalog_full_name)
             .join("dbang-catalog.json");
-        let data = fs::read_to_string(dbang_catalog_json_file).expect("Unable to read dbang-catalog.json");
-        let catalog: Catalog = serde_json::from_str(&data).expect("Unable to parse dbang-catalog.json");
+        return Catalog::read_from_file(&dbang_catalog_json_file);
+    }
+
+    pub fn read_from_file(dbang_catalog_json_file: &Path) -> anyhow::Result<Catalog> {
+        let data = fs::read_to_string(dbang_catalog_json_file)
+            .expect(format!("Unable to read {}", dbang_catalog_json_file.to_string_lossy()).as_str());
+        let catalog: Catalog = serde_json::from_str(&data)
+            .expect(format!("Unable to parse {}", dbang_catalog_json_file.to_string_lossy()).as_str());
         Ok(catalog)
     }
 
