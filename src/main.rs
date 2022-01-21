@@ -228,6 +228,10 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) ->
         }
     }
     let artifact = catalog::Artifact::read_from_local(repo_name, script_name).unwrap();
+    if !artifact.is_target_compatible() {
+        eprintln!("Script is not compatible with this target: {}", artifact.target.as_ref().unwrap());
+        return Ok(());
+    }
     let script_url = artifact.get_script_http_url(repo_name);
     let permissions: Vec<String> = artifact.get_deno_permissions();
     if verbose {
@@ -251,7 +255,7 @@ fn dbang_run_script(artifact_full_name: &str, artifact_args: &[&str], verbose: b
     } else {
         let catalog = catalog::Catalog::read_from_file(&dbang_catalog_file)?;
         if let Some(artifact) = catalog.scripts.get(artifact_full_name) {
-            deno_cli::run_local(artifact, artifact_args,verbose)?;
+            deno_cli::run_local(artifact, artifact_args, verbose)?;
             Ok(())
         } else {
             Err(anyhow::anyhow!("{} is not in dbang-catalog.json!", artifact_full_name))
