@@ -233,8 +233,8 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) ->
         }
     }
     let artifact = catalog::Artifact::read_from_local(repo_name, script_name).unwrap();
-    if !artifact.is_target_compatible() {
-        eprintln!("Script is not compatible with this target: {}", artifact.target.as_ref().unwrap());
+    if !artifact.is_platform_compatible() {
+        eprintln!("Script is not compatible with this platform: {:?}", artifact.platforms.as_ref().unwrap());
         return Ok(());
     }
     let script_url = artifact.get_script_http_url(repo_name);

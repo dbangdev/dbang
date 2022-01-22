@@ -23,9 +23,9 @@ pub struct Artifact {
     pub import_map: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deno: Option<String>,
-    /// target os and arch, format as `os-arch`
+    /// platform os and arch, format as `os-arch`
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub target: Option<String>,
+    pub platforms: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub permissions: Option<Vec<String>>,
 }
@@ -92,13 +92,13 @@ impl Artifact {
         return "deno".to_string();
     }
 
-    pub fn is_target_compatible(&self) -> bool {
-        if let Some(target) = &self.target {
+    pub fn is_platform_compatible(&self) -> bool {
+        if let Some(platforms) = &self.platforms {
             let os = std::env::consts::OS;
             let arch = std::env::consts::ARCH;
             let full_name = format!("{}-{}", os, arch);
-            return target.split(",").any(|x| {
-                x == os || x == full_name
+            return platforms.iter().any(|x| {
+                x == os || x == &full_name
             });
         }
         return true;
@@ -296,20 +296,20 @@ mod tests {
     }
 
     #[test]
-    fn test_is_target_compatible() {
+    fn test_is_platform_compatible() {
         let mut artifact = Artifact {
             script_ref: "hello.ts".to_string(),
             description: Some("Hello world".to_string()),
-            target: Some("macos".to_string()),
+            platforms: Some(vec!["macos".to_string()]),
             deno: None,
             import_map: None,
             permissions: None,
             compat: None,
         };
         if cfg!(target_os = "macos") {
-            assert!(artifact.is_target_compatible());
+            assert!(artifact.is_platform_compatible());
         } else {
-            assert!(!artifact.is_target_compatible());
+            assert!(!artifact.is_platform_compatible());
         }
     }
 }
