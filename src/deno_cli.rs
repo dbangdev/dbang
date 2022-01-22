@@ -4,8 +4,8 @@ use crate::catalog::Artifact;
 pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str], verbose: bool) -> anyhow::Result<Output> {
     let mut command = Command::new(artifact.get_deno_bin_path());
     command.arg("run").arg("--no-check");
-    if artifact.permissions.is_some() {
-        command.args(artifact.get_deno_permissions());
+    if let Some(permissions) = &artifact.permissions {
+        command.args(permissions);
     }
     if artifact.import_map.is_some() {
         command.arg("--import-map");
