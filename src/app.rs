@@ -184,7 +184,7 @@ pub fn build_app() -> App<'static> {
             Arg::new("quiet")
                 .long("quiet")
                 .short('q')
-                .takes_value(true)
+                .takes_value(false)
                 .help("Suppress diagnostic output")
                 .required(false),
         )
