@@ -18,6 +18,16 @@ pub fn get_default_deno() -> PathBuf {
     dbang_utils::dbang_dir().join("bin/deno")
 }
 
+pub fn get_default_deno_version() -> Option<String> {
+    let deno_bin = get_default_deno();
+    if deno_bin.exists() {
+        let deno_bin_path = std::fs::read_link(deno_bin).unwrap();
+        let deno_version = String::from(deno_bin_path.parent().unwrap().file_name().unwrap().to_string_lossy());
+        return Some(deno_version)
+    }
+    None
+}
+
 pub fn get_deno_home(version: &str) -> PathBuf {
     dbang_utils::dbang_dir()
         .join("deno")
@@ -157,5 +167,10 @@ mod tests {
         for x in list().unwrap() {
             println!("{}", x);
         }
+    }
+
+    #[test]
+    fn test_default_deno_version() {
+        println!("{:?}", get_default_deno_version());
     }
 }
