@@ -60,8 +60,8 @@ pub fn run_local(artifact: &Artifact, args: &[&str], verbose: bool) -> anyhow::R
 }
 
 pub fn cache(deno_bin_path: &str, script_name: &str, import_map: &Option<String>) -> anyhow::Result<Output> {
-    let mut command = Command::new(deno_bin_path)
-        .arg("cache")
+    let mut command = Command::new(deno_bin_path);
+    command.arg("cache")
         .arg("--no-check")
         .arg("--unstable")
         .arg("--reload")
