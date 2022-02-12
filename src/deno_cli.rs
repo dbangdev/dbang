@@ -59,13 +59,18 @@ pub fn run_local(artifact: &Artifact, args: &[&str], verbose: bool) -> anyhow::R
     Ok(output)
 }
 
-pub fn cache(deno_bin_path: &str, script_name: &str) -> anyhow::Result<Output> {
-    let output = Command::new(deno_bin_path)
+pub fn cache(deno_bin_path: &str, script_name: &str, import_map: &Option<String>) -> anyhow::Result<Output> {
+    let mut command = Command::new(deno_bin_path)
         .arg("cache")
         .arg("--no-check")
         .arg("--unstable")
         .arg("--reload")
-        .arg("--quiet")
+        .arg("--quiet");
+    if let Some(import_map) = import_map {
+        command.arg("--import-map");
+        command.arg(import_map);
+    }
+    let output = command
         .arg(script_name)
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
