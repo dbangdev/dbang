@@ -3,7 +3,7 @@ use crate::catalog::Artifact;
 
 pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str], verbose: bool) -> anyhow::Result<Output> {
     let mut command = Command::new(artifact.get_deno_bin_path());
-    command.arg("run").arg("--no-check");
+    command.arg("run").arg("--no-check").arg("--cached-only");
     if let Some(permissions) = &artifact.permissions {
         command.args(permissions);
     }
