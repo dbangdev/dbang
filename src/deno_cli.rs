@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::process::{Command, Output, Stdio};
 use crate::catalog::Artifact;
 
@@ -31,7 +32,7 @@ pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str], verbose: bool) -
     Ok(output)
 }
 
-pub fn run_local(artifact: &Artifact, args: &[&str], verbose: bool) -> anyhow::Result<Output> {
+pub fn run_local(working_dir: &Path, artifact: &Artifact, args: &[&str], verbose: bool) -> anyhow::Result<Output> {
     let mut command = Command::new(artifact.get_deno_bin_path());
     command.arg("run").arg("--no-check");
     if artifact.permissions.is_some() {
@@ -52,6 +53,7 @@ pub fn run_local(artifact: &Artifact, args: &[&str], verbose: bool) -> anyhow::R
         println!("[dbang] command line:  {:?}", command);
     }
     let output = command
+        .current_dir(working_dir)
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
