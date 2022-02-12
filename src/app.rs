@@ -180,6 +180,14 @@ pub fn build_app() -> App<'static> {
                 .help("Verbose output")
                 .required(false),
         )
+        .arg(
+            Arg::new("quiet")
+                .long("quiet")
+                .short('q')
+                .takes_value(true)
+                .help("Suppress diagnostic output")
+                .required(false),
+        )
         .subcommand(run_command)
         .subcommand(open_command)
         .subcommand(deno_command)
