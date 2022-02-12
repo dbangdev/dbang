@@ -32,3 +32,4 @@ means scripts in same dbang-catalog.json would share the same storage.
 # References
 
 * JBang: [jbang.dev](https://jbang.dev)
+* Update-informer: https://github.com/mgrachev/update-informer
