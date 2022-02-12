@@ -10,16 +10,26 @@ use std::collections::HashMap;
 use std::io;
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::time::Duration;
 use colored_json::ToColoredJson;
 use which::which;
 use crate::app::build_app;
 use colored::*;
 use crate::catalog::Catalog;
+use update_informer::{registry::GitHub, Check, UpdateInformer};
 
 fn main() {
     let app = build_app();
     let matches = app.get_matches();
     let verbose = matches.is_present("verbose");
+    let quiet = matches.is_present("quiet");
+    if !quiet {
+        //update informer: dbang new version and deno new version
+        let informer = UpdateInformer::new(GitHub, "dbangdev/dbang", app::VERSION, Duration::from_secs(60 * 60 * 24));
+        if let Ok(Some(version)) = informer.check_version() {
+            println!("DBang new version is available: {}", version);
+        }
+    }
     // run artifact without 'run' sub command
     if matches.is_present("script") {
         let artifact_full_name = matches.value_of("script").unwrap();
@@ -229,7 +239,7 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) ->
     // validate local catalog exists or not
     if !catalog::Catalog::local_exists(repo_name)? {
         if !confirm_remote_catalog(repo_name)? {
-            println!("Abort to accept nbang catalog!");
+            println!("Abort to accept dbang catalog!");
             return Ok(());
         }
     }
