@@ -24,10 +24,17 @@ fn main() {
     let verbose = matches.is_present("verbose");
     let quiet = matches.is_present("quiet");
     if !quiet {
-        //update informer: dbang new version and deno new version
-        let informer = UpdateInformer::new(GitHub, "dbangdev/dbang", app::VERSION, Duration::from_secs(60 * 60 * 24));
-        if let Ok(Some(version)) = informer.check_version() {
-            println!("DBang new version is available: {}", version);
+        //update informer: dbang new version
+        let dbang_informer = UpdateInformer::new(GitHub, "dbangdev/dbang", app::VERSION, Duration::from_secs(60 * 60 * 24));
+        if let Ok(Some(version)) = dbang_informer.check_version() {
+            println!("DBang new version available: {}", version);
+        }
+        //update informer: deno new version
+        if let Some(deno_version) = deno_versions::get_default_deno_version() {
+            let deno_informer = UpdateInformer::new(GitHub, "denoland/deno", &deno_version, Duration::from_secs(60 * 60 * 24));
+            if let Ok(Some(version)) = deno_informer.check_version() {
+                println!("Deno new version available: {}, please use `dbang deno install --default {}` to update!", version, version);
+            }
         }
     }
     // run artifact without 'run' sub command
