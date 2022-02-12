@@ -108,7 +108,7 @@ impl Artifact {
 impl Catalog {
     pub fn cache_artifacts(&self, github_user: &str) -> anyhow::Result<()> {
         for (_k, v) in self.scripts.iter() {
-            deno_cli::cache(&v.get_deno_bin_path(), &v.get_script_http_url(github_user))?;
+            deno_cli::cache(&v.get_deno_bin_path(), &v.get_script_http_url(github_user), &v.import_map)?;
         };
         Ok(())
     }
