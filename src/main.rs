@@ -9,6 +9,7 @@ mod aliases;
 use std::collections::HashMap;
 use std::io;
 use std::io::Write;
+use std::path::{Path, PathBuf};
 use colored_json::ToColoredJson;
 use which::which;
 use crate::app::build_app;
@@ -254,13 +255,16 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) ->
 }
 
 fn dbang_run_script(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) -> anyhow::Result<()> {
-    let dbang_catalog_file = std::env::current_dir()?.join("dbang-catalog.json");
-    if !dbang_catalog_file.exists() {
-        Err(anyhow::anyhow!("dbang-catalog.json is not in current directory!"))
+    let current_dir = std::env::current_dir()?;
+    let dbang_catalog_file = find_local_dbang_catalog(Some(current_dir.as_path()));
+    if dbang_catalog_file.is_none() {
+        eprintln!("dbang-catalog.json not found in current directory, parent directories or $HOME/.dbang");
+        return Ok(());
     } else {
-        let catalog = catalog::Catalog::read_from_file(&dbang_catalog_file)?;
+        let dbang_catalog_json_file = dbang_catalog_file.unwrap();
+        let catalog = catalog::Catalog::read_from_file(&dbang_catalog_json_file)?;
         if let Some(artifact) = catalog.scripts.get(artifact_full_name) {
-            deno_cli::run_local(artifact, artifact_args, verbose)?;
+            deno_cli::run_local(dbang_catalog_json_file.parent().unwrap(), artifact, artifact_args, verbose)?;
             Ok(())
         } else {
             Err(anyhow::anyhow!("{} is not in dbang-catalog.json!", artifact_full_name))
@@ -268,3 +272,19 @@ fn dbang_run_script(artifact_full_name: &str, artifact_args: &[&str], verbose: b
     }
 }
 
+fn find_local_dbang_catalog(base_dir: Option<&Path>) -> Option<PathBuf> {
+    if let Some(dir) = base_dir {
+        let dbang_catalog_file = dir.join("dbang-catalog.json");
+        return if dbang_catalog_file.exists() {
+            Some(dbang_catalog_file)
+        } else {
+            find_local_dbang_catalog(dir.parent())
+        };
+    }
+    let default_dbang_catalog = dirs::home_dir().unwrap().join(".dbang").join("dbang-catalog.json");
+    return if default_dbang_catalog.exists() {
+        Some(default_dbang_catalog)
+    } else {
+        None
+    };
+}
