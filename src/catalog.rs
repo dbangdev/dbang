@@ -297,7 +297,7 @@ mod tests {
 
     #[test]
     fn test_is_platform_compatible() {
-        let mut artifact = Artifact {
+        let artifact = Artifact {
             script_ref: "hello.ts".to_string(),
             description: Some("Hello world".to_string()),
             platforms: Some(vec!["macos".to_string()]),
