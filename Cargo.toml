@@ -36,6 +36,6 @@ zip = "0.5"
 update-informer = "0.2"
 
 [profile.release]
-strip = "debuginfo"
+strip = "symbols"
 lto = true
 opt-level = 3
