@@ -34,3 +34,8 @@ which = "4"
 anyhow = "1.0"
 zip = "0.5"
 update-informer = "0.2"
+
+[profile.release]
+strip = "debuginfo"
+lto = true
+opt-level = 3
