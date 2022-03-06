@@ -25,7 +25,7 @@ colored_json = "2"
 tokio = { version = "1", features = ["full"] }
 reqwest = { version = "0.11", features = ["blocking", "json"] }
 clap = "3.1"
-clap_complete = "3.0"
+clap_complete = "3.1"
 chrono = "0.4"
 regex = "1"
 dirs = "4"
@@ -36,6 +36,6 @@ zip = "0.5"
 update-informer = "0.2"
 
 [profile.release]
-strip = "symbols"
+strip = true
 lto = true
 opt-level = 3
