@@ -216,7 +216,7 @@ fn confirm_remote_catalog(repo_name: &str) -> anyhow::Result<bool> {
     // check trusted catalog or not
     let is_trusted = known_catalogs::include(repo_name)?;
     if is_trusted {
-        catalog::save_remote_nbang_catalog(repo_name)?;
+        catalog::save_remote_dbang_catalog(repo_name)?;
         return Ok(true);
     }
     let catalog = catalog::Catalog::fetch_from_github(repo_name)?;

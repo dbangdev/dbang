@@ -207,7 +207,7 @@ impl Catalog {
 }
 
 
-pub fn save_remote_nbang_catalog(repo_name: &str) -> anyhow::Result<()> {
+pub fn save_remote_dbang_catalog(repo_name: &str) -> anyhow::Result<()> {
     let catalog_full_name = Catalog::get_full_repo_name(repo_name);
     let url = get_dbang_catalog_url_on_github(&catalog_full_name);
     let response = Client::builder()
@@ -257,9 +257,9 @@ mod tests {
     }
 
     #[test]
-    fn test_save_nbang_catalog() -> anyhow::Result<()> {
+    fn test_save_dbang_catalog() -> anyhow::Result<()> {
         let github_user = "linux-china";
-        save_remote_nbang_catalog(github_user)?;
+        save_remote_dbang_catalog(github_user)?;
         if Catalog::local_exists(github_user).is_ok() {
             let catalog = Catalog::read_from_local(github_user)?;
             println!("catalog = {:?}", catalog);
@@ -268,7 +268,7 @@ mod tests {
     }
 
     #[test]
-    fn test_fetch_remote_nbang_catalog() -> anyhow::Result<()> {
+    fn test_fetch_remote_dbang_catalog() -> anyhow::Result<()> {
         let catalog = Catalog::fetch_from_github("linux-china")?;
         println!("catalog = {:?}", catalog);
         Ok(())
