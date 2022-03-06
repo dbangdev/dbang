@@ -1,10 +1,10 @@
 //! clap App for command cli
-use clap::{App, Arg};
+use clap::{Command, Arg};
 
 pub const VERSION: &str = "0.1.7";
 
-pub fn build_app() -> App<'static> {
-    let run_command = App::new("run")
+pub fn build_app() -> Command<'static> {
+    let run_command = Command::new("run")
         .about("Run scripts from catalog")
         .arg(
             Arg::new("script")
@@ -18,7 +18,7 @@ pub fn build_app() -> App<'static> {
             .index(2)
             .multiple_values(true)
     );
-    let open_command = App::new("open")
+    let open_command = Command::new("open")
         .about("Open catalog on GitHub")
         .arg(
             Arg::new("script")
@@ -26,12 +26,12 @@ pub fn build_app() -> App<'static> {
                 .help("script name")
                 .index(1)
         );
-    let deno_command = App::new("deno")
+    let deno_command = Command::new("deno")
         .about("Deno version management")
-        .subcommand(App::new("list")
+        .subcommand(Command::new("list")
             .about("List installed deno versions")
         )
-        .subcommand(App::new("add")
+        .subcommand(Command::new("add")
             .about("Install Deno with version")
             .arg(
                 Arg::new("default")
@@ -46,7 +46,7 @@ pub fn build_app() -> App<'static> {
                 .index(1)
             )
         )
-        .subcommand(App::new("default")
+        .subcommand(Command::new("default")
             .about("Set default Deno version")
             .arg(Arg::new("version")
                 .required(true)
@@ -54,7 +54,7 @@ pub fn build_app() -> App<'static> {
                 .index(1)
             )
         )
-        .subcommand(App::new("delete")
+        .subcommand(Command::new("delete")
             .about("Delete local installed Deno")
             .arg(Arg::new("version")
                 .required(true)
@@ -62,12 +62,12 @@ pub fn build_app() -> App<'static> {
                 .index(1)
             )
         );
-    let trust_command = App::new("trust")
+    let trust_command = Command::new("trust")
         .about("Trust management for catalogs")
-        .subcommand(App::new("list")
+        .subcommand(Command::new("list")
             .about("List trusted catalogs")
         )
-        .subcommand(App::new("add")
+        .subcommand(Command::new("add")
             .about("Add new trusted catalog")
             .arg(Arg::new("repo_name")
                 .required(true)
@@ -75,7 +75,7 @@ pub fn build_app() -> App<'static> {
                 .index(1)
             )
         )
-        .subcommand(App::new("delete")
+        .subcommand(Command::new("delete")
             .about("Delete trusted catalog")
             .arg(Arg::new("repo_name")
                 .required(true)
@@ -83,7 +83,7 @@ pub fn build_app() -> App<'static> {
                 .index(1)
             )
         );
-    let install_command = App::new("install")
+    let install_command = Command::new("install")
         .about("Install app from catalog")
         .arg(
             Arg::new("name")
@@ -98,7 +98,7 @@ pub fn build_app() -> App<'static> {
                 .required(true)
                 .index(1)
         );
-    let uninstall_command = App::new("uninstall")
+    let uninstall_command = Command::new("uninstall")
         .about("Uninstall app")
         .arg(
             Arg::new("name")
@@ -106,14 +106,14 @@ pub fn build_app() -> App<'static> {
                 .required(true)
                 .index(1)
         );
-    let apps_command = App::new("apps")
+    let apps_command = Command::new("apps")
         .about("List installed apps");
-    let catalog_command = App::new("catalog")
+    let catalog_command = Command::new("catalog")
         .about("Catalog management")
-        .subcommand(App::new("list")
+        .subcommand(Command::new("list")
             .about("List installed catalogs")
         )
-        .subcommand(App::new("show")
+        .subcommand(Command::new("show")
             .about("Display catalog info")
             .arg(Arg::new("repo_name")
                 .required(true)
@@ -121,7 +121,7 @@ pub fn build_app() -> App<'static> {
                 .index(1)
             )
         )
-        .subcommand(App::new("add")
+        .subcommand(Command::new("add")
             .about("Add new catalog")
             .arg(Arg::new("repo_name")
                 .required(true)
@@ -129,7 +129,7 @@ pub fn build_app() -> App<'static> {
                 .index(1)
             )
         )
-        .subcommand(App::new("update")
+        .subcommand(Command::new("update")
             .about("Update local catalog")
             .arg(Arg::new("repo_name")
                 .required(true)
@@ -137,7 +137,7 @@ pub fn build_app() -> App<'static> {
                 .index(1)
             )
         )
-        .subcommand(App::new("delete")
+        .subcommand(Command::new("delete")
             .about("Delete local catalog")
             .arg(Arg::new("repo_name")
                 .required(true)
@@ -145,7 +145,7 @@ pub fn build_app() -> App<'static> {
                 .index(1)
             )
         );
-    let complete_command = App::new("complete")
+    let complete_command = Command::new("complete")
         .about("Generate shell completion for zsh & bash")
         .arg(
             Arg::new("zsh")
@@ -169,7 +169,7 @@ pub fn build_app() -> App<'static> {
                 .required(false),
         );
     // init Clap
-    App::new("dbang")
+    Command::new("dbang")
         .version(VERSION)
         .about("CLI to manage Deno scripts: https://dbang.dev")
         .arg(
