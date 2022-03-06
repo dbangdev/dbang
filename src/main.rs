@@ -135,7 +135,7 @@ fn main() {
                     println!("Catalog updated successfully!");
                 }
             } else {
-                println!("{}", "Abort to accept nbang catalog!".red());
+                println!("{}", "Abort to accept dbang catalog!".red());
             }
         } else if catalog_sub_command == "delete" {
             let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
@@ -221,7 +221,7 @@ fn confirm_remote_catalog(repo_name: &str) -> anyhow::Result<bool> {
     }
     let catalog = catalog::Catalog::fetch_from_github(repo_name)?;
     let catalog_json = serde_json::to_string(&catalog)?;
-    println!("Detail of nbang-catalog.json:");
+    println!("Detail of dbang-catalog.json:");
     println!("{}", catalog_json.to_colored_json_auto()?);
     print!("Do you accept above catalog?  y/n > ");
     io::stdout().flush()?;
