@@ -33,7 +33,7 @@ symlink = "0.1"
 which = "4"
 anyhow = "1.0"
 zip = "0.5"
-update-informer = "0.2"
+update-informer = { version = "0.5", default_features = false, features = ["github"] }
 
 [profile.release]
 strip = true
