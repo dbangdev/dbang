@@ -16,7 +16,7 @@ use which::which;
 use crate::app::build_app;
 use colored::*;
 use crate::catalog::Catalog;
-use update_informer::{registry::GitHub, Check, UpdateInformer};
+use update_informer::{registry, Check};
 
 fn main() {
     let app = build_app();
@@ -25,13 +25,13 @@ fn main() {
     let quiet = matches.is_present("quiet");
     if !quiet {
         //update informer: dbang new version
-        let dbang_informer = UpdateInformer::new(GitHub, "dbangdev/dbang", app::VERSION, Duration::from_secs(60 * 60 * 24));
+        let dbang_informer = update_informer::new(registry::GitHub, "dbangdev/dbang", app::VERSION);
         if let Ok(Some(version)) = dbang_informer.check_version() {
             println!("DBang new version available: {}", version);
         }
         //update informer: deno new version
         if let Some(deno_version) = deno_versions::get_default_deno_version() {
-            let deno_informer = UpdateInformer::new(GitHub, "denoland/deno", &deno_version, Duration::from_secs(60 * 60 * 24));
+            let deno_informer = update_informer::new(registry::GitHub, "denoland/deno", &deno_version);
             if let Ok(Some(version)) = deno_informer.check_version() {
                 println!("Deno new version available: {}, please use `dbang deno install --default {}` to update!", version, version);
             }
