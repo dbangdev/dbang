@@ -21,9 +21,9 @@ pub fn get_default_deno() -> PathBuf {
 pub fn get_default_deno_version() -> Option<String> {
     let deno_bin = get_default_deno();
     if deno_bin.exists() {
-        let deno_bin_path = std::fs::read_link(deno_bin).unwrap();
+        let deno_bin_path = fs::read_link(deno_bin).unwrap();
         let deno_version = String::from(deno_bin_path.parent().unwrap().file_name().unwrap().to_string_lossy());
-        return Some(deno_version)
+        return Some(deno_version);
     }
     None
 }
@@ -54,6 +54,7 @@ pub fn install(version: &str) -> anyhow::Result<()> {
     if !deno_bin_path.exists() {
         download(version)?;
         unzip_deno(version)?;
+        fs::remove_file(get_deno_home(version).join("deno.zip"))?;
     }
     Ok(())
 }
@@ -70,7 +71,7 @@ pub fn link_as_default(version: &str) -> anyhow::Result<()> {
 
 pub fn download(version: &str) -> anyhow::Result<()> {
     let deno_version_dir = get_deno_home(version);
-    std::fs::create_dir_all(&deno_version_dir)?;
+    fs::create_dir_all(&deno_version_dir)?;
     let temp_zip_file = deno_version_dir.join("deno.zip");
     let download_url = if cfg!(target_os = "macos") && cfg!(target_arch = "aarch64") {
         format!("https://github.com/denoland/deno/releases/download/v{}/deno-aarch64-apple-darwin.zip", version)
@@ -85,7 +86,7 @@ pub fn download(version: &str) -> anyhow::Result<()> {
         .build()?
         .get(download_url)
         .send()?;
-    let mut zip_file = std::fs::File::create(&temp_zip_file)?;
+    let mut zip_file = File::create(&temp_zip_file)?;
     io::copy(&mut response, &mut zip_file)?;
     Ok(())
 }
@@ -111,16 +112,16 @@ pub fn unzip_deno(version: &str) -> anyhow::Result<()> {
             None => &deno_version_dir,
         };
         if !outpath.exists() {
-            std::fs::create_dir_all(outpath)?;
+            fs::create_dir_all(outpath)?;
         }
         let mut outfile = File::create(outpath.join(file.name()))?;
         io::copy(&mut file, &mut outfile)?;
         // Get and Set permissions
         #[cfg(any(unix, macos, linux))]
-            {
-                use std::os::unix::fs::PermissionsExt;
-                outfile.set_permissions(fs::Permissions::from_mode(file.unix_mode().unwrap())).unwrap();
-            }
+        {
+            use std::os::unix::fs::PermissionsExt;
+            outfile.set_permissions(fs::Permissions::from_mode(file.unix_mode().unwrap())).unwrap();
+        }
     }
     Ok(())
 }
