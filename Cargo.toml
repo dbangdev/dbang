@@ -32,7 +32,7 @@ dirs = "4"
 symlink = "0.1"
 which = "4"
 anyhow = "1.0"
-zip = "0.5"
+zip = "0.6"
 update-informer = { version = "0.5", default_features = false, features = ["github"] }
 
 [profile.release]
