@@ -38,4 +38,6 @@ update-informer = { version = "0.5", default_features = false, features = ["gith
 [profile.release]
 strip = true
 lto = true
-opt-level = 3
+opt-level = "z"
+codegen-units = 1
+panic = "abort"
