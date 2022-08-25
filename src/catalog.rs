@@ -30,6 +30,8 @@ pub struct Artifact {
     pub unstable: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub permissions: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub args: Option<Vec<String>>,
 }
 
 impl Artifact {
@@ -308,6 +310,7 @@ mod tests {
             unstable: None,
             permissions: None,
             compat: None,
+            args: None,
         };
         if cfg!(target_os = "macos") {
             assert!(artifact.is_platform_compatible());
