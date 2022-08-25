@@ -27,6 +27,8 @@ pub struct Artifact {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub platforms: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub unstable: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub permissions: Option<Vec<String>>,
 }
 
@@ -61,7 +63,7 @@ impl Artifact {
         let catalog_repo = Catalog::get_full_repo_name(repo_name);
         let deno_config_file = dbang_utils::dbang_dir().join("catalogs/github").join(catalog_repo).join("deno.json");
         if !deno_config_file.exists() {
-            std::fs::write(&deno_config_file, "{}").unwrap();
+            fs::write(&deno_config_file, "{}").unwrap();
         }
         String::from(deno_config_file.to_string_lossy())
     }
