@@ -25,7 +25,13 @@ pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str], verbose: bool) -
     command.arg("--config");
     command.arg(artifact.get_deno_config(repo_name));
     command.arg(artifact.get_script_http_url(repo_name));
-    command.args(args);
+    if !args.is_empty() {
+        command.args(args);
+    } else {
+        if let Some(default_args) = &artifact.args {
+            command.args(default_args);
+        }
+    }
     if verbose {
         println!("[dbang] command line:  {:?}", command);
     }
@@ -58,7 +64,13 @@ pub fn run_local(working_dir: &Path, artifact: &Artifact, args: &[&str], verbose
         }
     }
     command.arg(&artifact.script_ref);
-    command.args(args);
+    if !args.is_empty() {
+        command.args(args);
+    } else {
+        if let Some(default_args) = &artifact.args {
+            command.args(default_args);
+        }
+    }
     if verbose {
         println!("[dbang] command line:  {:?}", command);
     }
