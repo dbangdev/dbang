@@ -52,6 +52,8 @@ build:
   cp target/release/dbang ~/bin/
   cp target/release/dbang ~/.dbang/bin/
   cp target/release/dbang-shim ~/.dbang/bin/
+  cp target/release/dbang ~/.cargo/bin/dbang
+  cp target/release/dbang-shim ~/.cargo/bin/dbang-shim
 
 x64-tar:
   cargo build --release
