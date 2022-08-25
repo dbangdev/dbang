@@ -16,6 +16,8 @@ DBang is a CLI to manage Deno scripts on GitHub
 * Install Apps
 * Aliases & Catalogs
 * Trust and Permissions
+* Unstable
+* Default arguments
 
 # Security strategies
 
