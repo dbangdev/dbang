@@ -40,6 +40,11 @@ pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str], verbose: bool) -
 pub fn run_local(working_dir: &Path, artifact: &Artifact, args: &[&str], verbose: bool) -> anyhow::Result<Output> {
     let mut command = Command::new(artifact.get_deno_bin_path());
     command.arg("run").arg("--no-check");
+    if let Some(unstable) = artifact.unstable {
+        if unstable {
+            command.arg("--unstable");
+        }
+    }
     if artifact.permissions.is_some() {
         command.args(artifact.get_deno_permissions());
     }
