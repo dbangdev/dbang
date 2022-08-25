@@ -305,6 +305,7 @@ mod tests {
             platforms: Some(vec!["macos".to_string()]),
             deno: None,
             import_map: None,
+            unstable: None,
             permissions: None,
             compat: None,
         };
