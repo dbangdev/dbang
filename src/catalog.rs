@@ -249,7 +249,7 @@ mod tests {
             "myip": {
               "script-ref": "myip.ts",
               "description": "Display your IP address by https://httpbin.org/ip",
-              "deno": "1.17.1",
+              "deno": "1.25.0",
               "permissions": [
                 "allow-net"
               ]

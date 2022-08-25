@@ -132,7 +132,7 @@ mod tests {
 
     #[test]
     fn test_deno_exists() {
-        println!("{}", get_deno_binary("1.17.1").exists());
+        println!("{}", get_deno_binary("1.25.0").exists());
     }
 
     #[test]
@@ -145,22 +145,22 @@ mod tests {
 
     #[test]
     fn test_deno_download() {
-        download("1.17.1").unwrap();
+        download("1.25.0").unwrap();
     }
 
     #[test]
     fn test_unzip_deno() {
-        unzip_deno("1.17.1").unwrap();
+        unzip_deno("1.25.0").unwrap();
     }
 
     #[test]
     fn test_delete() {
-        delete("1.17.1").unwrap();
+        delete("1.25.0").unwrap();
     }
 
     #[test]
     fn test_install() {
-        install("1.17.1").unwrap();
+        install("1.25.0").unwrap();
     }
 
     #[test]
