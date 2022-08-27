@@ -244,7 +244,7 @@ fn dbang_run(artifact_full_name: &str, artifact_args: &[&str], verbose: bool) ->
     let repo_name = artifact_parts[1];
     let script_name = artifact_parts[0];
     // validate local catalog exists or not
-    if !catalog::Catalog::local_exists(repo_name)? {
+    if !Catalog::local_exists(repo_name)? {
         if !confirm_remote_catalog(repo_name)? {
             println!("Abort to accept dbang catalog!");
             return Ok(());
@@ -284,7 +284,8 @@ fn dbang_run_script(artifact_full_name: &str, artifact_args: &[&str], verbose: b
             deno_cli::run_local(dbang_catalog_json_file.parent().unwrap(), artifact, artifact_args, verbose)?;
             Ok(())
         } else {
-            Err(anyhow::anyhow!("{} is not in dbang-catalog.json!", artifact_full_name))
+            println!("{}", format!("{} is not in dbang-catalog.json!", artifact_full_name).red());
+            Ok(())
         }
     }
 }
