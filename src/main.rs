@@ -10,7 +10,6 @@ use std::collections::HashMap;
 use std::io;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::time::Duration;
 use colored_json::ToColoredJson;
 use which::which;
 use crate::app::build_app;
@@ -21,8 +20,8 @@ use update_informer::{registry, Check};
 fn main() {
     let app = build_app();
     let matches = app.get_matches();
-    let verbose = matches.is_present("verbose");
-    let quiet = matches.is_present("quiet");
+    let verbose = matches.get_flag("verbose");
+    let quiet = matches.get_flag("quiet");
     if !quiet {
         //update informer: dbang new version
         let dbang_informer = update_informer::new(registry::GitHub, "dbangdev/dbang", app::VERSION);
@@ -38,12 +37,13 @@ fn main() {
         }
     }
     // run artifact without 'run' sub command
-    if matches.is_present("script") {
-        let artifact_full_name = matches.value_of("script").unwrap();
-        let mut artifact_args = vec![];
-        if let Some(params) = matches.values_of("params") {
-            artifact_args = params.collect::<Vec<&str>>()
-        }
+    if matches.contains_id("script") {
+        let artifact_full_name = matches.get_one::<String>("script").unwrap();
+        let artifact_args = matches.get_many::<String>("params")
+            .into_iter()
+            .flatten()
+            .map(|s| s as &str)
+            .collect::<Vec<_>>();
         dbang_run(artifact_full_name, &artifact_args, verbose).unwrap();
         return;
     }
@@ -59,20 +59,21 @@ fn main() {
     // parse subcommand and run
     let (sub_command, sub_command_args) = matches.subcommand().unwrap();
     if sub_command == "run" {
-        let mut artifact_args = vec![];
-        if let Some(params) = sub_command_args.values_of("params") {
-            artifact_args = params.collect::<Vec<&str>>()
-        }
-        let artifact_full_name = sub_command_args.value_of("script").unwrap();
+        let artifact_args = sub_command_args.get_many::<String>("params")
+            .into_iter()
+            .flatten()
+            .map(|s| s as &str)
+            .collect::<Vec<_>>();
+        let artifact_full_name = sub_command_args.get_one::<String>("script").unwrap();
         dbang_run(artifact_full_name, &artifact_args, verbose).unwrap();
     }
     if sub_command == "open" {
-        let artifact_full_name = sub_command_args.value_of("script").unwrap();
+        let artifact_full_name = sub_command_args.get_one::<String>("script").unwrap();
         let url = format!("https://github.com/{}", artifact_full_name);
         dbang_utils::open_url(&url).unwrap();
     } else if sub_command == "install" {
-        let artifact_full_name = sub_command_args.value_of("script").unwrap();
-        let app_name = if let Some(name) = sub_command_args.value_of("name") {
+        let artifact_full_name = sub_command_args.get_one::<String>("script").unwrap();
+        let app_name = if let Some(name) = sub_command_args.get_one::<String>("name") {
             name.to_string()
         } else {
             if artifact_full_name.starts_with("http://") || artifact_full_name.starts_with("https://") {
@@ -97,7 +98,7 @@ fn main() {
         symlink::symlink_file(dbang_shim_path, app_link).unwrap();
         println!("{} app installed", app_name);
     } else if sub_command == "uninstall" {
-        let app_name = sub_command_args.value_of("name").unwrap();
+        let app_name = sub_command_args.get_one::<String>("name").unwrap();
         aliases::remove(app_name).unwrap();
         let app_link = dbang_bin_dir.join(&app_name);
         if app_link.exists() {
@@ -126,7 +127,7 @@ fn main() {
                 println!("  {}", catalog_full_name);
             };
         } else if catalog_sub_command == "add" || catalog_sub_command == "update" {
-            let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
+            let repo_name = catalog_sub_command_args.get_one::<String>("repo_name").unwrap();
             let repo_full_name = Catalog::get_full_repo_name(repo_name);
             if confirm_remote_catalog(&repo_full_name).unwrap() {
                 if catalog_sub_command == "add" {
@@ -138,14 +139,14 @@ fn main() {
                 println!("{}", "Abort to accept dbang catalog!".red());
             }
         } else if catalog_sub_command == "delete" {
-            let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
+            let repo_name = catalog_sub_command_args.get_one::<String>("repo_name").unwrap();
             let repo_full_name = Catalog::get_full_repo_name(repo_name);
             catalog::Catalog::delete(&repo_full_name).unwrap();
             known_catalogs::remove(&repo_full_name).unwrap();
             aliases::remove_by_repo_name(&repo_full_name).unwrap();
             println!("Catalog deleted successfully!");
         } else if catalog_sub_command == "show" {
-            let repo_name = catalog_sub_command_args.value_of("repo_name").unwrap();
+            let repo_name = catalog_sub_command_args.get_one::<String>("repo_name").unwrap();
             let catalog = catalog::Catalog::read_from_local(repo_name).unwrap();
             let catalog_json = serde_json::to_string(&catalog).unwrap();
             println!("{}", catalog_json.to_colored_json_auto().unwrap());
@@ -160,12 +161,17 @@ fn main() {
         let (deno_sub_command, deno_sub_command_args) = sub_command_args.subcommand().unwrap();
         if deno_sub_command == "list" {
             println!("Local Deno versions:");
+            let default_deno_version = deno_versions::get_default_deno_version().unwrap_or("".to_owned());
             for deno_version in deno_versions::list().unwrap() {
-                println!("  {}", deno_version);
+                if default_deno_version == deno_version {
+                    println!("* {}", deno_version);
+                } else {
+                    println!("  {}", deno_version);
+                }
             };
         } else if deno_sub_command == "add" {
-            let mut deno_version = deno_sub_command_args.value_of("version").unwrap().to_string();
-            let as_default = deno_sub_command_args.is_present("default");
+            let mut deno_version = deno_sub_command_args.get_one::<String>("version").unwrap().to_string();
+            let as_default = deno_sub_command_args.get_flag("default");
             if deno_version.starts_with("v") {
                 deno_version = deno_version[1..].to_string();
             }
@@ -177,11 +183,11 @@ fn main() {
                 println!("Default deno switched to {}", deno_version);
             }
         } else if deno_sub_command == "delete" {
-            let deno_version = deno_sub_command_args.value_of("version").unwrap();
+            let deno_version = deno_sub_command_args.get_one::<String>("version").unwrap();
             deno_versions::delete(deno_version).unwrap();
             println!("Deno deleted successfully!");
         } else if deno_sub_command == "default" {
-            let deno_version = deno_sub_command_args.value_of("version").unwrap();
+            let deno_version = deno_sub_command_args.get_one::<String>("version").unwrap();
             deno_versions::link_as_default(deno_version).unwrap();
             println!("Default deno switched to {}", deno_version);
         } else {
@@ -199,11 +205,11 @@ fn main() {
                 println!("  {}", catalog);
             };
         } else if trust_sub_command == "add" {
-            let repo_name = trust_sub_command_args.value_of("repo_name").unwrap().to_string();
+            let repo_name = trust_sub_command_args.get_one::<String>("repo_name").unwrap().to_string();
             known_catalogs::add(&Catalog::get_full_repo_name(&repo_name)).unwrap();
             println!("Catalog in trusted list now!");
         } else if trust_sub_command == "delete" {
-            let repo_name = trust_sub_command_args.value_of("repo_name").unwrap().to_string();
+            let repo_name = trust_sub_command_args.get_one::<String>("repo_name").unwrap().to_string();
             known_catalogs::remove(&Catalog::get_full_repo_name(&repo_name)).unwrap();
             println!("Catalog removed from trusted list!");
         } else {
