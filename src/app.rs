@@ -1,9 +1,9 @@
 //! clap App for command cli
-use clap::{Command, Arg};
+use clap::{Command, Arg, ArgAction};
 
-pub const VERSION: &str = "0.2.0";
+pub const VERSION: &str = "0.2.1";
 
-pub fn build_app() -> Command<'static> {
+pub fn build_app() -> Command {
     let run_command = Command::new("run")
         .about("Run scripts from catalog")
         .arg(
@@ -16,7 +16,7 @@ pub fn build_app() -> Command<'static> {
             .required(false)
             .help("params")
             .index(2)
-            .multiple_values(true)
+            .num_args(1..)
     );
     let open_command = Command::new("open")
         .about("Open catalog on GitHub")
@@ -36,7 +36,7 @@ pub fn build_app() -> Command<'static> {
             .arg(
                 Arg::new("default")
                     .long("default")
-                    .takes_value(false)
+                    .action(ArgAction::SetTrue)
                     .help("Set as default version")
                     .required(false)
             )
@@ -88,7 +88,7 @@ pub fn build_app() -> Command<'static> {
         .arg(
             Arg::new("name")
                 .long("name")
-                .takes_value(true)
+                .num_args(1)
                 .help("Custom app name for script")
                 .required(false),
         )
@@ -150,21 +150,21 @@ pub fn build_app() -> Command<'static> {
         .arg(
             Arg::new("zsh")
                 .long("zsh")
-                .takes_value(false)
+                .action(ArgAction::SetTrue)
                 .help("Zsh completion")
                 .required(false),
         )
         .arg(
             Arg::new("oh_my_zsh")
                 .long("oh_my_zsh")
-                .takes_value(false)
+                .action(ArgAction::SetTrue)
                 .help("Oh My Zsh")
                 .required(false),
         )
         .arg(
             Arg::new("bash")
                 .long("bash")
-                .takes_value(false)
+                .action(ArgAction::SetTrue)
                 .help("Bash completion")
                 .required(false),
         );
@@ -176,7 +176,7 @@ pub fn build_app() -> Command<'static> {
             Arg::new("verbose")
                 .long("verbose")
                 .short('v')
-                .takes_value(false)
+                .action(ArgAction::SetTrue)
                 .help("Verbose output")
                 .required(false),
         )
@@ -184,7 +184,7 @@ pub fn build_app() -> Command<'static> {
             Arg::new("quiet")
                 .long("quiet")
                 .short('q')
-                .takes_value(false)
+                .action(ArgAction::SetTrue)
                 .help("Suppress diagnostic output")
                 .required(false),
         )
@@ -206,6 +206,6 @@ pub fn build_app() -> Command<'static> {
                 .required(false)
                 .help("params")
                 .index(2)
-                .multiple_values(true)
+                .num_args(1..)
         )
 }
