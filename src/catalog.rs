@@ -77,8 +77,10 @@ impl Artifact {
                     x.clone()
                 } else if x.starts_with("-") {
                     format!("-{}", x)
-                } else {
+                } else if x.contains("allow-") {
                     format!("--{}", x)
+                } else {
+                    format!("--allow-{}", x)
                 }
             }).collect();
         }
