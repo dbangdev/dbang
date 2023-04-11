@@ -28,12 +28,12 @@ clap = "4"
 clap_complete = "4"
 chrono = "0.4"
 regex = "1"
-dirs = "4"
+dirs = "5"
 symlink = "0.1"
 which = "4"
 anyhow = "1.0"
 zip = "0.6"
-update-informer = { version = "0.5", default_features = false, features = ["github"] }
+update-informer = { version = "0.6", default_features = false, features = ["github"] }
 
 [profile.release]
 strip = true
@@ -41,3 +41,6 @@ lto = true
 opt-level = "z"
 codegen-units = 1
 panic = "abort"
+
+[registries.crates-io]
+protocol = "sparse"
