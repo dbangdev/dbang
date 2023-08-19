@@ -17,6 +17,10 @@ pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str], verbose: bool) -
         command.arg("--import-map");
         command.arg(artifact.get_import_map_http_url(repo_name));
     }
+    if artifact.v8_flags.is_some() {
+        command.arg("--v8-flags");
+        command.arg(artifact.v8_flags.as_ref().unwrap());
+    }
     if let Some(compat) = artifact.compat {
         if compat {
             command.arg("--compat");
@@ -57,6 +61,10 @@ pub fn run_local(working_dir: &Path, artifact: &Artifact, args: &[&str], verbose
     if artifact.import_map.is_some() {
         command.arg("--import-map");
         command.arg(artifact.import_map.as_ref().unwrap());
+    }
+    if artifact.v8_flags.is_some() {
+        command.arg("--v8-flags");
+        command.arg(artifact.v8_flags.as_ref().unwrap());
     }
     if let Some(compat) = artifact.compat {
         if compat {
