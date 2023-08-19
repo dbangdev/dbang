@@ -31,6 +31,9 @@ pub struct Artifact {
     pub unstable: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub permissions: Option<Vec<String>>,
+    #[serde(rename(serialize = "v8_flags", deserialize = "v8_flags"))]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub v8_flags: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub args: Option<Vec<String>>,
 }
@@ -315,6 +318,7 @@ mod tests {
             unstable: None,
             permissions: None,
             compat: None,
+            v8_flags: None,
             args: None,
         };
         if cfg!(target_os = "macos") {
