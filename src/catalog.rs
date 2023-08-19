@@ -17,6 +17,7 @@ pub struct Artifact {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[deprecated(since = "1.26.0", note = "compat option removed from Deno 1.26.0")]
     pub compat: Option<bool>,
     #[serde(rename(serialize = "import-map", deserialize = "import-map"))]
     #[serde(skip_serializing_if = "Option::is_none")]
