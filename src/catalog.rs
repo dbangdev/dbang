@@ -43,7 +43,9 @@ impl Artifact {
     }
 
     pub fn get_script_http_url(&self, repo_name: &str) -> String {
-        return if self.script_ref.starts_with("https://") || self.script_ref.starts_with("http://") {
+        return if self.script_ref.starts_with("https://")
+            || self.script_ref.starts_with("http://")
+            || self.script_ref.starts_with("npm:") {
             self.script_ref.to_string()
         } else {
             let catalog_repo = Catalog::get_full_repo_name(repo_name);
