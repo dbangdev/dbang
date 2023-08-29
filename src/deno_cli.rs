@@ -40,6 +40,7 @@ pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str], verbose: bool) -
         println!("[dbang] command line:  {:?}", command);
     }
     let output = command
+        .envs(std::env::vars())
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -104,6 +105,7 @@ pub fn cache(deno_bin_path: &str, script_name: &str, import_map: &Option<String>
     }
     let output = command
         .arg(script_name)
+        .envs(std::env::vars())
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
