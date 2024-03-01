@@ -10,8 +10,8 @@ pub fn run(repo_name: &str, artifact: &Artifact, args: &[&str], verbose: bool) -
             command.arg("--unstable");
         }
     }
-    if let Some(permissions) = &artifact.permissions {
-        command.args(permissions);
+    if artifact.permissions.is_some() {
+        command.args(artifact.get_deno_permissions());
     }
     if artifact.import_map.is_some() {
         command.arg("--import-map");
